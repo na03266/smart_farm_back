@@ -1,4 +1,7 @@
 spring:
+  sql:
+    init:
+      mode: never
   jpa:
     # 전송 쿼리 확인
     show-sql: true
@@ -14,3 +17,6 @@ spring:
   h2:
     console:
       enabled: true
+jwt:
+  issuer: ghkdwp0326@gmail.com
+  secret_key: smart-farm

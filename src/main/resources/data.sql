@@ -1,3 +1,13 @@
-insert into article (title, content) values ('제목 1', '내용 1')
-insert into article (title, content) values ('제목 2', '내용 2')
-insert into article (title, content) values ('제목 3', '내용 3')
+insert into article (title, content, created_at, updated_at)
+values ('제목 1', '내용 1', NOW(), NOW());
+
+insert into article (title, content, created_at, updated_at)
+values ('제목 2', '내용 2', NOW(), NOW());
+
+insert into article (title, content, created_at, updated_at)
+values ('제목 3', '내용 3', NOW(), NOW());
+
+INSERT INTO roles (role_name)
+VALUES ('ROLE_USER'),
+       ('ROLE_ADMIN'),
+       ('ROLE_SUPERADMIN');
