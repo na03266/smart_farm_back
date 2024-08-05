@@ -14,4 +14,10 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(()-> new IllegalArgumentException("Unexpected token"));
     }
+
+//    public Long save(Long userId, String refreshToken){
+//        RefreshToken refreshTokenEntity = RefreshToken.builder()
+
+//        return
+//    }
 }

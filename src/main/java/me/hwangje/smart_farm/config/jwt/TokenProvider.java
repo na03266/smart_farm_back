@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -33,8 +34,9 @@ public class TokenProvider {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now) // 내용 iat : 현재 시간
                 .setExpiration(expiry) // 내용 exp : expire 멤버 변수값
-                .setSubject(user.getEmail()) // 내용 sub : 유저의 유저아이디
+                .setSubject(user.getEmail()) // 내용 sub : 유저의 이메일
                 .claim("id", user.getId()) // 클레임 id : 유저의 아이디
+                .claim("role", user.getRole().name())
                 // 서명 : 비밀값과 함께 해시 값을 HS256 방식으로 암호화
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
@@ -55,15 +57,24 @@ public class TokenProvider {
     // 토큰 기반으로 인증 정보를 가져오는 메서드
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        // JWT 토큰에서 역할 정보 가져오기
+        String role = claims.get("role", String.class);
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+        // 역할 정보를 SimpleGrantedAuthority로 변환
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role));
+
+        return new UsernamePasswordAuthenticationToken(
+                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities),
+                token,
+                authorities
+        );
     }
 
     public Long getUserId(String token) {
         Claims claims = getClaims(token);
         return claims.get("id", Long.class);
     }
+
     public String getUsername(String token) {
         Claims claims = getClaims(token);
         return claims.getSubject();

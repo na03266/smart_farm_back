@@ -8,6 +8,6 @@ insert into article (title, content, created_at, updated_at)
 values ('제목 3', '내용 3', NOW(), NOW());
 
 INSERT INTO roles (role_name)
-VALUES ('ROLE_USER'),
-       ('ROLE_ADMIN'),
-       ('ROLE_SUPERADMIN');
+VALUES ('USER'),
+       ('ADMIN'),
+       ('SUPER_ADMIN');

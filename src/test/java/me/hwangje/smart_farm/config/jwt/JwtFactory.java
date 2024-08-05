@@ -15,10 +15,11 @@ import static java.util.Collections.emptyMap;
 
 @Getter
 public class JwtFactory {
-    private String subject = "test@email,com";
+    private String subject = "test@email.com";
     private Date issuedAt = new Date();
     private Date expiration = new Date(new Date().getTime() + Duration.ofDays(14).toMillis());
-    private Map<String, Object> claims = emptyMap();
+    private Map<String, Object> claims =  emptyMap();
+
 
     @Builder
     public JwtFactory(String subject, Date issuedAt, Date expiration, Map<String, Object> claims) {
@@ -26,6 +27,7 @@ public class JwtFactory {
         this.issuedAt = issuedAt != null ? issuedAt : this.issuedAt;
         this.expiration = expiration != null ? expiration : this.expiration;
         this.claims = claims != null ? claims : this.claims;
+
     }
 
     public static JwtFactory withDefaultValues() {
@@ -33,6 +35,7 @@ public class JwtFactory {
     }
 
     public String createToken(JwtProperties jwtProperties) {
+
         return Jwts.builder()
                 .setSubject(subject)
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)

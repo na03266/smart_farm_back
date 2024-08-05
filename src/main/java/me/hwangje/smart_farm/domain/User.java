@@ -5,49 +5,64 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private List<Role> roles;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
-                .collect(Collectors.toList());
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Override // 권한 반환
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Builder
-    public User(String email, String password, String auth) {
+    public User(String email, String password, Role role, String userName, String phoneNumber) {
         this.email = email;
         this.password = password;
+        this.role = (role!=null)? role : Role.USER;
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
     }
 
     // 사용자 id 반환
@@ -85,4 +100,14 @@ public class User implements UserDetails {
         // 계정이 사용 가능한지 확인하는 로직
         return true; // true -> 사용 가능
     }
+
+    // 사용자 이름 변경
+    public User update(String userName, String phoneNumber, String password, Role role) {
+        this.password = password;
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        return this;
+    }
+
 }

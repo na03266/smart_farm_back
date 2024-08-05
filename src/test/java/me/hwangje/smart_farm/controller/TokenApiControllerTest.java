@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.hwangje.smart_farm.config.jwt.JwtFactory;
 import me.hwangje.smart_farm.config.jwt.JwtProperties;
 import me.hwangje.smart_farm.domain.RefreshToken;
+import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.CreateAccessTokenRequest;
 import me.hwangje.smart_farm.repository.RefreshTokenRepository;
@@ -43,7 +44,7 @@ public class TokenApiControllerTest {
     RefreshTokenRepository refreshTokenRepository;
 
     @BeforeEach
-    public void mockMvcSetup(){
+    public void mockMvcSetup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .build();
         userRepository.deleteAll();
@@ -51,17 +52,19 @@ public class TokenApiControllerTest {
 
     @DisplayName("createNewAccessToken : 새로운 액세스 토큰을 발급한다.")
     @Test
-    public void createNewAccessToken() throws Exception{
+    public void createNewAccessToken() throws Exception {
         //given
         final String url = "/api/token";
 
         User testUser = userRepository.save(User.builder()
                 .email("user@gmail.com")
                 .password("test")
+                .role(Role.USER)
                 .build());
 
         String refreshToken = JwtFactory.builder()
                 .claims(Map.of("id", testUser.getId()))
+                .claims(Map.of("role", testUser.getRole()))
                 .build()
                 .createToken(jwtProperties);
 
