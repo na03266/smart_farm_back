@@ -86,7 +86,7 @@ class GroupApiControllerTest {
 
     @DisplayName("관리자로 그룹 추가에 성공한다")
     @Test
-    void addGroup_AsAdmin_Success() throws Exception {
+    void 그룹추가_관리자() throws Exception {
         // Given
         setAuthentication(admin);
         AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
@@ -108,7 +108,27 @@ class GroupApiControllerTest {
 
     @DisplayName("매니저로 그룹 추가 시 실패한다")
     @Test
-    void addGroup_AsManager_Fail() throws Exception {
+    void 그룹추가_매니저() throws Exception {
+        // Given
+        setAuthentication(user);
+        AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
+        String requestBody = objectMapper.writeValueAsString(request);
+
+        // When
+        ResultActions result = mockMvc.perform(post("/api/groups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody));
+
+        // Then
+        result.andExpect(status().isForbidden());
+
+        List<Group> groups = groupRepository.findAll();
+        assertThat(groups).isEmpty();
+    }
+
+    @DisplayName("사용자로 그룹 추가 시 실패한다")
+    @Test
+    void 그룹추가_사용자() throws Exception {
         // Given
         setAuthentication(manager);
         AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
@@ -126,9 +146,9 @@ class GroupApiControllerTest {
         assertThat(groups).isEmpty();
     }
 
-    @DisplayName("모든 그룹을 조회한다")
+    @DisplayName("관리자로 모든 그룹을 조회한다")
     @Test
-    void findAllGroups_Success() throws Exception {
+    void 전체그룹조회_관리자() throws Exception {
         // Given
         Group group = createDefaultGroup();
         setAuthentication(admin);
@@ -141,6 +161,20 @@ class GroupApiControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(group.getName())));
+    }
+    @DisplayName("매니저로 모든 그룹을 조회에 실패한다")
+    @Test
+    void 전체그룹조회_매니저() throws Exception {
+        // Given
+        Group group = createDefaultGroup();
+        setAuthentication(manager);
+
+        // When
+        ResultActions result = mockMvc.perform(get("/api/groups")
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        result.andExpect(status().isForbidden());
     }
 
     @DisplayName("특정 그룹을 조회한다")
@@ -160,7 +194,7 @@ class GroupApiControllerTest {
 
     @DisplayName("그룹 정보를 수정한다")
     @Test
-    void updateGroup_Success() throws Exception {
+    void 그룹정보갱신_매니저() throws Exception {
         // Given
         Group group = createDefaultGroup();
         setAuthentication(manager);
@@ -182,7 +216,7 @@ class GroupApiControllerTest {
 
     @DisplayName("그룹을 삭제한다")
     @Test
-    void deleteGroup_Success() throws Exception {
+    void 그룹삭제_관리자() throws Exception {
         // Given
         Group group = createDefaultGroup();
         setAuthentication(admin);
