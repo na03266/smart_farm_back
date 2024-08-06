@@ -34,8 +34,8 @@ public class TokenProviderTest {
                 .email("user@email.com")
                 .password("test")
                 .role(Role.USER)
-                .phoneNumber("01000000000")
-                .nickname("똑딱이")
+                .contact("01000000000")
+                .name("똑딱이")
                 .build());
         //when
         String token = tokenProvider.generateToken(testUser, Duration.ofDays(14));

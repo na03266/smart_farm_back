@@ -34,16 +34,20 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Column(name = "managerName")
+    private String managerName;
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @Column(name = "nickname")
-    private String nickname;
+    @Getter
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "contact")
+    private String contact;
 
     @CreatedDate
     @Column(name = "created_at")
@@ -59,12 +63,13 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, Role role, String nickname, String phoneNumber, Group group) {
+    public User(String email, String password, Role role, String name, String contact, Group group, String managerName) {
         this.email = email;
         this.password = password;
         this.role = (role!=null)? role : Role.USER;
-        this.nickname = nickname;
-        this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.contact = contact;
+        this.managerName = managerName;
         this.group = group;
     }
 
@@ -105,12 +110,12 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String nickname, String phoneNumber, String password, Role role, Group group) {
-        if (nickname != null) {
-            this.nickname = nickname;
+    public User update(String name, String phoneNumber, String password, Role role, Group group, String managerName) {
+        if (name != null) {
+            this.name = name;
         }
         if (phoneNumber != null) {
-            this.phoneNumber = phoneNumber;
+            this.contact = contact;
         }
         if (password != null) {
             this.password = password;
@@ -120,6 +125,9 @@ public class User implements UserDetails {
         }
         if(group != null){
             this.group = group;
+        }
+        if (managerName != null){
+            this.managerName = managerName;
         }
         return this;
     }

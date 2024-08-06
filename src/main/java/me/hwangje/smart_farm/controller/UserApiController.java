@@ -1,33 +1,19 @@
 package me.hwangje.smart_farm.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import me.hwangje.smart_farm.config.jwt.TokenProvider;
 import me.hwangje.smart_farm.domain.Role;
-import me.hwangje.smart_farm.domain.User;
-import me.hwangje.smart_farm.dto.AddUserRequest;
-import me.hwangje.smart_farm.dto.CreateAccessTokenResponse;
-import me.hwangje.smart_farm.dto.LoginRequest;
-import me.hwangje.smart_farm.service.RefreshTokenService;
+import me.hwangje.smart_farm.dto.UserDto.AddUserRequest;
 import me.hwangje.smart_farm.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -39,7 +25,7 @@ public class UserApiController {
     @PostMapping("/user")
     public String signup(AddUserRequest request) {
         userService.save(request);
-        return request.getNickname();
+        return request.getName();
     }
 
     @GetMapping("/logout")
@@ -51,24 +37,24 @@ public class UserApiController {
                 );
     }
 
-    @GetMapping("/users")
-    public List<User> findAll() throws AccessDeniedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("인증되지 않은 사용자입니다.");
-        }
-
-        String username = authentication.getName();
-        User currentUser = userService.findByUsername(username);
-
-        if (hasRole(authentication, Role.ADMIN)) {
-            return userService.findAll();
-        } else if (hasRole(authentication, Role.MANAGER)) {
-            return userService.findByGroup(currentUser.getGroupId());
-        } else {
-            return Collections.singletonList(currentUser);
-        }
-    }
+//    @GetMapping("/users")
+//    public List<User> findAll() throws AccessDeniedException {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            throw new AccessDeniedException("인증되지 않은 사용자입니다.");
+//        }
+//
+//        String username = authentication.getName();
+//        User currentUser = userService.findByUsername(username);
+//
+//        if (hasRole(authentication, Role.ADMIN)) {
+//            return userService.findAll();
+//        } else if (hasRole(authentication, Role.MANAGER)) {
+//            return userService.findByGroup(currentUser.getGroupId());
+//        } else {
+//            return Collections.singletonList(currentUser);
+//        }
+//    }
 
     private boolean hasRole(Authentication authentication, Role role) {
         return authentication.getAuthorities().contains(new SimpleGrantedAuthority(role.name()));

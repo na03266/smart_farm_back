@@ -12,7 +12,7 @@ public class AddUserRequest {
     private String email;
     private String password;
     private Role role;
-    private String nickname;
+    private String name;
     private String phoneNumber;
     private String manager;
     private String company;

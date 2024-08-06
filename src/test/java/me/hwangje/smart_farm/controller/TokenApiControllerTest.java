@@ -65,7 +65,7 @@ public class TokenApiControllerTest {
         user = userRepository.save(User.builder()
                 .email("user@gmail.com")
                 .password("test")
-                .nickname("또도도독")
+                .name("또도도독")
                 .build());
 
         SecurityContext context = SecurityContextHolder.getContext();
