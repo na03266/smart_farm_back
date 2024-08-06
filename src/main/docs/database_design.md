@@ -18,15 +18,15 @@ erDiagram
         string phone_number "휴대전화"
         string role "역할"
         string manager "상위매니저"
-        string company "소속회사"
+        string group_id "소속회사"
         timestamp updated_at "상태 갱신 시간"
         timestamp created_at "상태 생성 시간"
     }
     
-    companies{
+    groups{
         bigint id PK "회사 고유 번호"
-        string company_name "회사 명"
-        string company_contact "회사 연락처"
+        string name "회사 명"
+        string contact "회사 연락처"
         string registration_number UK "사업자 번호"
         timestamp updated_at "상태 갱신 시간"
         timestamp created_at "상태 생성 시간"

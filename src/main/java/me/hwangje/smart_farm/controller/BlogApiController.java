@@ -2,9 +2,7 @@ package me.hwangje.smart_farm.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.Article;
-import me.hwangje.smart_farm.dto.AddArticleRequest;
-import me.hwangje.smart_farm.dto.ArticleResponse;
-import me.hwangje.smart_farm.dto.UpdateArticleRequest;
+import me.hwangje.smart_farm.dto.ArticleDto.*;
 import me.hwangje.smart_farm.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

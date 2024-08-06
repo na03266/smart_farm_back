@@ -30,7 +30,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
         User user = userRepository.findByEmail(email)
-                .map(entity -> entity.update(name, null, null, null))
+                .map(entity -> entity.update(name, null, null, null, null))
                 .orElse(User.builder()
                         .email(email)
                         .nickname(name)

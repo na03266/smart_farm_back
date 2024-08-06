@@ -1,6 +1,7 @@
 package me.hwangje.smart_farm.service;
 
 import lombok.RequiredArgsConstructor;
+import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.AddUserRequest;
 import me.hwangje.smart_farm.repository.UserRepository;
@@ -24,12 +25,15 @@ public class UserService {
                 .email(dto.getEmail())
                 //패스워드 암호화
                 .password(encoder.encode(dto.getPassword()))
-                .nickname(dto.getUserName())
+                .nickname(dto.getNickname())
                 .phoneNumber(dto.getPhoneNumber())
                 .role(dto.getRole())
                 .build()).getId();
     }
 
+    public List<User> findByGroup(Long id){
+        return userRepository.findByGroup(id);
+    }
     public User findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
@@ -58,7 +62,7 @@ public class UserService {
         return userRepository.findByNicknameContaining(nameFragment);
     }
 
-    public List<User> findByRole(String role) {
+    public List<User> findByGroup(String group) {
         return userRepository.findByRole(role);
     }
 
@@ -70,8 +74,17 @@ public class UserService {
         return userRepository.findByEmailContainingOrNicknameContaining(keyword, keyword);
     }
 
+    /**
+     * 사용자 삭제, ADMIN 인 경우 아무나 삭제 가능, MANAGER인 경우 같은 소속의 매니저만 삭제 가능
+     * @param id
+     */
     public void delete(long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("not found " + id));
+
+        if(user.getRole() == Role.ADMIN) {
+            userRepository.deleteById(id);
+        }
     }
 
 }

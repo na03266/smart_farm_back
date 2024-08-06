@@ -1,10 +1,7 @@
 package me.hwangje.smart_farm.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -37,6 +34,11 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
+
     @Column(name = "nickname")
     private String nickname;
 
@@ -57,12 +59,13 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, Role role, String nickname, String phoneNumber) {
+    public User(String email, String password, Role role, String nickname, String phoneNumber, Group group) {
         this.email = email;
         this.password = password;
         this.role = (role!=null)? role : Role.USER;
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
+        this.group = group;
     }
 
     // 사용자 id 반환
@@ -102,7 +105,7 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String nickname, String phoneNumber, String password, Role role) {
+    public User update(String nickname, String phoneNumber, String password, Role role, Group group) {
         if (nickname != null) {
             this.nickname = nickname;
         }
@@ -115,7 +118,9 @@ public class User implements UserDetails {
         if (role != null) {
             this.role = role;
         }
+        if(group != null){
+            this.group = group;
+        }
         return this;
     }
-
 }

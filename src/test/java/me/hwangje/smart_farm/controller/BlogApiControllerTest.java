@@ -3,8 +3,7 @@ package me.hwangje.smart_farm.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.hwangje.smart_farm.domain.Article;
 import me.hwangje.smart_farm.domain.User;
-import me.hwangje.smart_farm.dto.AddArticleRequest;
-import me.hwangje.smart_farm.dto.UpdateArticleRequest;
+import me.hwangje.smart_farm.dto.ArticleDto;
 import me.hwangje.smart_farm.repository.BlogRepository;
 import me.hwangje.smart_farm.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +75,7 @@ class BlogApiControllerTest {
         final String url = "/api/articles";
         final String title = "title";
         final String content = "content";
-        final AddArticleRequest userRequest = new AddArticleRequest(title, content);
+        final ArticleDto.AddArticleRequest userRequest = new ArticleDto.AddArticleRequest(title, content);
 
         // 객체 JSON으로 직렬화
         final String requestBody = objectMapper.writeValueAsString(userRequest);
@@ -164,7 +163,7 @@ class BlogApiControllerTest {
         final String newTitle = "new title";
         final String newContent = "new content";
 
-        UpdateArticleRequest request = new UpdateArticleRequest(newTitle, newContent);
+        ArticleDto.UpdateArticleRequest request = new  ArticleDto.UpdateArticleRequest(newTitle, newContent);
 
         //when
         ResultActions result = mockMvc.perform(put(url, savedArticle.getId())
