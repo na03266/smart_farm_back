@@ -19,34 +19,31 @@ public class BlogService {
         return blogRepository.save(request.toEntity(userName));
     }
 
-    public List<Article> findAll(){
+    public List<Article> findAll() {
         return blogRepository.findAll();
     }
 
-    public Article findById(long id){
-        return  blogRepository.findById(id)
+    public Article findById(long id) {
+        return blogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found " + id));
     }
 
-    public void delete(long id){
-        Article article = blogRepository.findById(id)
-                        .orElseThrow(()-> new IllegalArgumentException("not found" + id));
+    public void delete(long id) {
+        Article article = findById(id);
         authorizeArticleAuthor(article);
         blogRepository.deleteById(id);
     }
 
     private static void authorizeArticleAuthor(Article article) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!article.getAuthor().equals(userName)){
+        if (!article.getAuthor().equals(userName)) {
             throw new IllegalArgumentException("not authorized");
         }
     }
 
     @Transactional
-    public Article update(long id, UpdateArticleRequest request){
-        Article article = blogRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("not found " + id));
-
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = findById(id);
         authorizeArticleAuthor(article);
         article.update(request.getTitle(), request.getContent());
 

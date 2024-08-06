@@ -86,4 +86,23 @@ public class GroupApiController {
         groupService.delete(id);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "그룹 검색", description = "그룹에 포함된 이름을 기준으로 검색, ADMIN 권한 가능")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "검색 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없음"),
+            @ApiResponse(responseCode = "404", description = "검색 결과 없음")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/search")
+    public ResponseEntity<List<GroupResponse>> searchGroups(@RequestParam String name) {
+        List<Group> groups = groupService.searchGroups(name);
+        if (groups.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<GroupResponse> response = groups.stream()
+                .map(GroupResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(response);
+    }
 }

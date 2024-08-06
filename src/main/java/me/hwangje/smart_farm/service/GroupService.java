@@ -37,6 +37,11 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
+    // Read
+    public List<Group> searchGroups(String name){
+        return groupRepository.findByNameContaining(name);
+    }
+
     // Update
     @Transactional
     public Group update(Long id, UpdateGroupRequest request) {
