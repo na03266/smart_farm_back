@@ -30,67 +30,19 @@ import java.time.Duration;
 public class UserApiController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final TokenProvider tokenProvider;
-    private final RefreshTokenService refreshTokenService;
 
-    @GetMapping("/current-user")
-    @Operation(summary = "접속한 회원 정보 반환", description = "현재 접속한 회원의 정보를 반환")
-    public ResponseEntity<?> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.ok("No user is currently logged in");
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof UserDetails userDetails) {
-            String username = userDetails.getUsername();
-            User user = userService.findByEmail(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.ok("User is authenticated but details are not available");
-        }
+    @PostMapping("/user")
+    public String signup(AddUserRequest request) {
+        userService.save(request);
+        return request.getNickname();
     }
-    @PostMapping("/signup")
-    @Operation(summary = "회원 가입", description = "새로운 사용자를 등록")
-    public ResponseEntity<?> signup(@RequestBody AddUserRequest request) {
-        try {
-            Long userId = userService.save(request);
-            return ResponseEntity.ok().body("User registered successfully. User ID: " + userId);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
-        }
-    }
+
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
-    }
-    @PostMapping("/login")
-    @Operation(summary = "로그인", description = "사용자 로그인을 처리하고 JWT 토큰을 반환")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
-            User user = (User) authentication.getPrincipal();
-
-            String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
-            String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14));
-
-            // 여기에 JWT 토큰 생성 로직을 추가할 수 있습니다.
-//            refreshTokenService.saveRefreshToken(user.getId(), refreshToken);
-//re
-//            return ResponseEntity.ok(new CreateAccessTokenResponse(token));
-            return null;
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
-        }
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        new SecurityContextLogoutHandler()
+                .logout(request,
+                        response,
+                        SecurityContextHolder.getContext().getAuthentication()
+                );
     }
 }

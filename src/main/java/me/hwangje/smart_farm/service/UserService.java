@@ -16,14 +16,15 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public Long save(AddUserRequest dto) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
         return userRepository.save(User.builder()
                 .email(dto.getEmail())
                 //패스워드 암호화
-                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
-                .userName(dto.getUserName())
+                .password(encoder.encode(dto.getPassword()))
+                .nickname(dto.getUserName())
                 .phoneNumber(dto.getPhoneNumber())
                 .role(dto.getRole())
                 .build()).getId();
@@ -36,22 +37,25 @@ public class UserService {
 
     /**
      * 모든 사용자 정보를 조회
+     *
      * @return 모든 사용자 정보 목록
      */
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
-    public User findById(long id){
+
+    public User findById(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found " + id));
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
     }
 
     public List<User> findByUserNameContaining(String nameFragment) {
-        return userRepository.findByUserNameContaining(nameFragment);
+        return userRepository.findByNicknameContaining(nameFragment);
     }
 
     public List<User> findByRole(String role) {
@@ -63,10 +67,10 @@ public class UserService {
     }
 
     public List<User> searchUsers(String keyword) {
-        return userRepository.findByEmailContainingOrUserNameContaining(keyword, keyword);
+        return userRepository.findByEmailContainingOrNicknameContaining(keyword, keyword);
     }
 
-    public void delete(long id){
+    public void delete(long id) {
         userRepository.deleteById(id);
     }
 

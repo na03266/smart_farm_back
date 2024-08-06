@@ -37,8 +37,8 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "nickname")
+    private String nickname;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -57,11 +57,11 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, Role role, String userName, String phoneNumber) {
+    public User(String email, String password, Role role, String nickname, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.role = (role!=null)? role : Role.USER;
-        this.userName = userName;
+        this.nickname = nickname;
         this.phoneNumber = phoneNumber;
     }
 
@@ -102,11 +102,19 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String userName, String phoneNumber, String password, Role role) {
-        this.password = password;
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
+    public User update(String nickname, String phoneNumber, String password, Role role) {
+        if (nickname != null) {
+            this.nickname = nickname;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        if (password != null) {
+            this.password = password;
+        }
+        if (role != null) {
+            this.role = role;
+        }
         return this;
     }
 

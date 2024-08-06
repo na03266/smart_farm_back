@@ -34,9 +34,8 @@ public class TokenProviderTest {
                 .email("user@email.com")
                 .password("test")
                 .role(Role.USER)
-                        .phoneNumber("01000000000")
-                        .userName("똑딱이")
-
+                .phoneNumber("01000000000")
+                .nickname("똑딱이")
                 .build());
         //when
         String token = tokenProvider.generateToken(testUser, Duration.ofDays(14));
@@ -135,6 +134,6 @@ public class TokenProviderTest {
         //then
         String roleFromAuth = ((UserDetails) authentication.getPrincipal()).getAuthorities().iterator().next().getAuthority();
 
-        assertThat(roleFromAuth).isEqualTo("ROLE_"+role.name());
+        assertThat(roleFromAuth).isEqualTo("ROLE_" + role.name());
     }
 }

@@ -16,13 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.print.attribute.standard.Media;
+import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,6 +50,8 @@ public class TokenApiControllerTest {
     @Autowired
     RefreshTokenRepository refreshTokenRepository;
 
+    User user;
+
     @BeforeEach
     public void mockMvcSetup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -50,28 +59,31 @@ public class TokenApiControllerTest {
         userRepository.deleteAll();
     }
 
+    @BeforeEach
+    void setSecurityContext() {
+        userRepository.deleteAll();
+        user = userRepository.save(User.builder()
+                .email("user@gmail.com")
+                .password("test")
+                .nickname("또도도독")
+                .build());
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+    }
+
     @DisplayName("createNewAccessToken : 새로운 액세스 토큰을 발급한다.")
     @Test
     public void createNewAccessToken() throws Exception {
         //given
         final String url = "/api/token";
+        String refreshToken = createRefreshToken();
 
-        User testUser = userRepository.save(User.builder()
-                .email("user@gmail.com")
-                .password("test")
-                .role(Role.USER)
-                .build());
-
-        String refreshToken = JwtFactory.builder()
-                .claims(Map.of("id", testUser.getId()))
-                .claims(Map.of("role", testUser.getRole()))
-                .build()
-                .createToken(jwtProperties);
-
-        refreshTokenRepository.save(new RefreshToken(testUser.getId(), refreshToken));
+        refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken));
 
         CreateAccessTokenRequest request = new CreateAccessTokenRequest();
         request.setRefreshToken(refreshToken);
+
         final String requestBody = objectMapper.writeValueAsString(request);
 
         //when
@@ -83,5 +95,36 @@ public class TokenApiControllerTest {
         resultActions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty());
+    }
+
+    @DisplayName("deleteRefreshToken : 리프레시 토큰을 삭제한다.")
+    @Test
+    public void deleteRefreshToken() throws Exception {
+        //given
+        final String url = "/api/refresh-token";
+        String refreshToken = createRefreshToken();
+
+        refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken));
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, refreshToken, user.getAuthorities()));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(delete(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        resultActions
+                .andExpect(status().isOk());
+        assertThat(refreshTokenRepository.findByRefreshToken(refreshToken)).isEmpty();
+    }
+
+    private String createRefreshToken() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("role", user.getRole());
+        return JwtFactory.builder()
+                .claims(claims)
+                .build()
+                .createToken(jwtProperties);
     }
 }

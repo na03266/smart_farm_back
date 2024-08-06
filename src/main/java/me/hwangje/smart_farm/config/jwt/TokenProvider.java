@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -30,7 +29,7 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // 헤더 typ: JWT
-                // 내용 iss : ghkdwp0326@gmail.com(propertise 파일에서 설정한 값)
+                // 내용 iss : ghkdwp0326@gmail.com(properties 파일에서 설정한 값)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now) // 내용 iat : 현재 시간
                 .setExpiration(expiry) // 내용 exp : expire 멤버 변수값
@@ -60,7 +59,7 @@ public class TokenProvider {
         // JWT 토큰에서 역할 정보 가져오기
         String role = claims.get("role", String.class);
 
-        // 역할 정보를 SimpleGrantedAuthority로 변환
+        // 역할 정보를 SimpleGrantedAuthority 로 변환
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role));
 
         return new UsernamePasswordAuthenticationToken(
@@ -75,10 +74,12 @@ public class TokenProvider {
         return claims.get("id", Long.class);
     }
 
-    public String getUsername(String token) {
-        Claims claims = getClaims(token);
-        return claims.getSubject();
-    }
+// --Commented out by Inspection START (2024-08-05 오후 5:53):
+//    public String getUsername(String token) {
+//        Claims claims = getClaims(token);
+//        return claims.getSubject();
+//    }
+// --Commented out by Inspection STOP (2024-08-05 오후 5:53)
 
     private Claims getClaims(String token) {
         return Jwts.parser()
