@@ -2,7 +2,7 @@
 
 ```mermaid
 erDiagram
-    companies ||--o{ users: "has"
+    groups ||--o{ users: "has"
     users ||--o{ controllers: "has"
     controllers ||--o{ device_timers: "has"
     controllers ||--o{ device_setups: "has"

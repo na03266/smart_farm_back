@@ -33,10 +33,6 @@ public class Group {
     @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
-
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users = new ArrayList<>();
-
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -58,13 +54,4 @@ public class Group {
         this.registrationNumber = registrationNumber;
     }
 
-    public void addUser(User user) {
-        this.users.add(user);
-        user.setGroup(this);
-    }
-
-    public void removeUser(User user) {
-        this.users.remove(user);
-        user.setGroup(null);
-    }
 }

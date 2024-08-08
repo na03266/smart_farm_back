@@ -61,8 +61,8 @@ public class WebOAuthSecurityConfig {
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 토큰 재발급 URL은 인증 없이 접근 가능하도록 설정, 나머지 API URL은 인증 필요
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/api/login")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/signup")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/users/login")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/users/signup")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/token")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()

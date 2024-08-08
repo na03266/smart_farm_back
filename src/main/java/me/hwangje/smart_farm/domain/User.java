@@ -34,11 +34,11 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "managerName")
-    private String managerName;
+    @Column(name = "manager")
+    private String manager;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
     private Group group;
 
@@ -63,13 +63,13 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, Role role, String name, String contact, Group group, String managerName) {
+    public User(String email, String password, Role role, String name, String contact, Group group, String manager) {
         this.email = email;
         this.password = password;
         this.role = (role!=null)? role : Role.USER;
         this.name = name;
         this.contact = contact;
-        this.managerName = managerName;
+        this.manager = manager;
         this.group = group;
     }
 
@@ -110,7 +110,7 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String name, String phoneNumber, String password, Role role, Group group, String managerName) {
+    public User update(String name, String phoneNumber, String password, Role role, Group group, String manager) {
         if (name != null) {
             this.name = name;
         }
@@ -126,8 +126,8 @@ public class User implements UserDetails {
         if(group != null){
             this.group = group;
         }
-        if (managerName != null){
-            this.managerName = managerName;
+        if (manager != null){
+            this.manager = manager;
         }
         return this;
     }
