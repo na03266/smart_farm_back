@@ -24,11 +24,12 @@ public class ControllerService {
     @Transactional
     public Controller save(AddControllerRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByName(authentication.getName())
+        User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Controller controller = Controller.builder()
                 .controllerId(request.getControllerId())
+                .name(request.getName())
                 .setTempLow(request.getSetTempLow())
                 .setTempHigh(request.getSetTempHigh())
                 .tempGap(request.getTempGap())
@@ -67,17 +68,23 @@ public class ControllerService {
     }
 
     // Read (모든 컨트롤러)
-    public List<Controller> findAll(String controllerNameLike, String userNameLike, String groupNameLike) {
+    public List<Controller> findAllByRole(String controllerNameLike, String userNameLike, String groupNameLike) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (user.getRole().equals(Role.ADMIN)) {
-            return controllerRepository.findAll();
+            // 관리자인 경우
+            return controllerRepository.findByNameContainingAndUser_NameContainingAndGroup_NameContaining(
+                    controllerNameLike, userNameLike, groupNameLike);
         } else if (user.getRole().equals(Role.MANAGER)) {
-            return controllerRepository.findByGroup(user.getGroup());
+            // 매니저인 경우
+            return controllerRepository.findByNameContainingAndUser_NameContainingAndGroup_NameContaining(
+                    controllerNameLike, userNameLike, user.getGroup().getName());
         } else {
-            return controllerRepository.findByUser(user);
+            // 사용자인 경우
+            return controllerRepository.findByNameContainingAndUser_NameContainingAndGroup_NameContaining(
+                    controllerNameLike, user.getName(), user.getGroup().getName());
         }
     }
 

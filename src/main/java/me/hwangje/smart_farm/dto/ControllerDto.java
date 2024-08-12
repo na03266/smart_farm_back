@@ -14,6 +14,7 @@ public class ControllerDto {
     @Getter
     public static class AddControllerRequest {
         private String controllerId;
+        private String name;
         private Float setTempLow;
         private Float setTempHigh;
         private Float tempGap;
@@ -30,6 +31,7 @@ public class ControllerDto {
         public Controller toEntity() {
             return Controller.builder()
                     .controllerId(controllerId)
+                    .name(name)
                     .setTempLow(setTempLow)
                     .setTempHigh(setTempHigh)
                     .tempGap(tempGap)
@@ -49,6 +51,7 @@ public class ControllerDto {
     @Getter
     public static class ControllerResponse {
         private String controllerId;
+        private String name;
         private Float setTempLow;
         private Float setTempHigh;
         private Float tempGap;
@@ -64,6 +67,7 @@ public class ControllerDto {
 
         public ControllerResponse(Controller controller) {
             this.controllerId = controller.getControllerId();
+            this.name = controller.getName();
             this.setTempLow = controller.getSetTempLow();
             this.setTempHigh = controller.getSetTempHigh();
             this.tempGap = controller.getTempGap();

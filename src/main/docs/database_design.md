@@ -22,8 +22,8 @@ erDiagram
         timestamp updated_at "상태 갱신 시간"
         timestamp created_at "상태 생성 시간"
     }
-    
-    groups{
+
+    groups {
         bigint id PK "회사 고유 번호"
         string name "회사 명"
         string contact "회사 연락처"
@@ -48,6 +48,7 @@ erDiagram
         timestamp updated_at "상태 갱신 시간"
         timestamp created_at "상태 생성 시간"
         string user_id FK "사용자 ID"
+        string group_id FK "소속 그룹 ID"
     }
 
     device_timers {

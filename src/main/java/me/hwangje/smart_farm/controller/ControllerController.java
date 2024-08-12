@@ -35,15 +35,19 @@ public class ControllerController {
                 .body(new ControllerResponse(savedController));
     }
 
-    @Operation(summary = "모든 컨트롤러 조회", description = "모든 컨트롤러를 조회, ADMIN 권한 필요.")
+    @Operation(summary = "할당된 모든 컨트롤러 조회", description = "모든 컨트롤러를 조회, 권한에 따라 결과가 다름.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "권한 없음")
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<ControllerResponse>> findAllControllers() {
-        List<ControllerResponse> controllers = controllerService.findAll(null,null,null)
+    public ResponseEntity<List<ControllerResponse>> findAllControllersByRole(
+            @RequestParam(required = false) String controllerNameLike,
+            @RequestParam(required = false) String userNameLike,
+            @RequestParam(required = false) String groupNameLike
+    ) {
+        List<ControllerResponse> controllers = controllerService.findAllByRole(
+                        controllerNameLike, userNameLike, groupNameLike)
                 .stream()
                 .map(ControllerResponse::new)
                 .toList();
@@ -67,7 +71,6 @@ public class ControllerController {
             @ApiResponse(responseCode = "403", description = "권한 없음"),
             @ApiResponse(responseCode = "404", description = "컨트롤러를 찾을 수 없음")
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ControllerResponse> updateController(@PathVariable Long id, @RequestBody UpdateControllerRequest request) {
         Controller updatedController = controllerService.update(id, request);

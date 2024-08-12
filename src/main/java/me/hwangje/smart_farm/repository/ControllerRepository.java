@@ -12,4 +12,7 @@ public interface ControllerRepository extends JpaRepository<Controller, Long> {
     Optional<Controller> findByControllerId(String controllerId);
     List<Controller> findByUser(User user);
     List<Controller> findByGroup(Group group);
+
+    List<Controller> findByNameContainingAndUser_NameContainingAndGroup_NameContaining(
+            String controllerName, String userName, String groupName);
 }
