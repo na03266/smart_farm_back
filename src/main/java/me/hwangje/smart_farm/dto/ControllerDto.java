@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.hwangje.smart_farm.domain.Controller;
-import me.hwangje.smart_farm.domain.Group;
-import me.hwangje.smart_farm.domain.User;
 
 public class ControllerDto {
 
@@ -25,45 +23,24 @@ public class ControllerDto {
         private Float alarmTempLow;
         private String tel;
         private Boolean awsEnabled;
-        private Group group;
-        private User user;
-
-        public Controller toEntity() {
-            return Controller.builder()
-                    .controllerId(controllerId)
-                    .name(name)
-                    .setTempLow(setTempLow)
-                    .setTempHigh(setTempHigh)
-                    .tempGap(tempGap)
-                    .heatTemp(heatTemp)
-                    .iceType(iceType)
-                    .alarmType(alarmType)
-                    .alarmTempHigh(alarmTempHigh)
-                    .alarmTempLow(alarmTempLow)
-                    .tel(tel)
-                    .awsEnabled(awsEnabled)
-                    .group(group)
-                    .user(user)
-                    .build();
-        }
+        private Long userId;
     }
 
     @Getter
     public static class ControllerResponse {
-        private String controllerId;
-        private String name;
-        private Float setTempLow;
-        private Float setTempHigh;
-        private Float tempGap;
-        private Float heatTemp;
-        private Integer iceType;
-        private Integer alarmType;
-        private Float alarmTempHigh;
-        private Float alarmTempLow;
-        private String tel;
-        private Boolean awsEnabled;
-        private Group group;
-        private User user;
+        private final String controllerId;
+        private final String name;
+        private final Float setTempLow;
+        private final Float setTempHigh;
+        private final Float tempGap;
+        private final Float heatTemp;
+        private final Integer iceType;
+        private final Integer alarmType;
+        private final Float alarmTempHigh;
+        private final Float alarmTempLow;
+        private final String tel;
+        private final Boolean awsEnabled;
+        private final Long userId;
 
         public ControllerResponse(Controller controller) {
             this.controllerId = controller.getControllerId();
@@ -78,8 +55,7 @@ public class ControllerDto {
             this.alarmTempLow = controller.getAlarmTempLow();
             this.tel = controller.getTel();
             this.awsEnabled = controller.getAwsEnabled();
-            this.group = controller.getGroup();
-            this.user = controller.getUser();
+            this.userId = controller.getUserId();
         }
     }
 
@@ -98,7 +74,6 @@ public class ControllerDto {
         private Float alarmTempLow;
         private String tel;
         private Boolean awsEnabled;
-        private Group group;
-        private User user;
+        private Long userId;
     }
 }

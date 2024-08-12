@@ -31,6 +31,7 @@ public class ControllerController {
     @PostMapping
     public ResponseEntity<ControllerResponse> addController(@RequestBody AddControllerRequest request) {
         Controller savedController = controllerService.save(request);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ControllerResponse(savedController));
     }

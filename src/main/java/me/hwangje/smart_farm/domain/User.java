@@ -38,8 +38,8 @@ public class User implements UserDetails {
     private String manager;
 
     @Setter
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private Group group;
 
     @Getter

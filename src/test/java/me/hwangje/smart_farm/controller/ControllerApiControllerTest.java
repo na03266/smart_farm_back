@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ControllerControllerTest {
+class ControllerApiControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -85,7 +85,8 @@ class ControllerControllerTest {
         user = createUser("user@test.com", testGroup, Role.USER);
 
         testController = controllerRepository.save(Controller.builder()
-                .controllerId("TEST_CTRL_001")  // 이 부분을 추가
+                .controllerId("TEST_CTRL_001")
+                .name("테스트컨트롤러")
                 .setTempLow(20.0f)
                 .setTempHigh(25.0f)
                 .tempGap(1.0f)
@@ -96,7 +97,6 @@ class ControllerControllerTest {
                 .alarmTempLow(18.0f)
                 .tel("01012345678")
                 .awsEnabled(true)
-                .group(testGroup)
                 .user(user)
                 .build());
     }
@@ -123,20 +123,19 @@ class ControllerControllerTest {
         // Given
         setAuthentication(admin);
         AddControllerRequest request = new AddControllerRequest(
-                "CTRL001",  // controllerId
-                "1번",
-                20.0f,      // setTempLow
-                25.0f,      // setTempHigh
-                1.0f,       // tempGap
-                30.0f,      // heatTemp
-                1,          // iceType
-                1,          // alarmType
-                28.0f,      // alarmTempHigh
-                18.0f,      // alarmTempLow
-                "01012345678", // tel
-                true,       // awsEnabled
-                testGroup,  // group
-                user        // user
+                "TEST_CTRL_002",
+                "테스트2번",
+                20.0f,
+                25.0f,
+                1.0f,
+                30.0f,
+                1,
+                1,
+                28.0f,
+                18.0f,
+                "01012345678",
+                true,
+                user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
 
@@ -147,31 +146,30 @@ class ControllerControllerTest {
 
         // Then
         result.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is("1번")));
+                .andExpect(jsonPath("$.controllerId", is("TEST_CTRL_002")));
 
-        assertThat(controllerRepository.findByControllerId("CTRL001")).isPresent();
+        assertThat(controllerRepository.findByControllerId("TEST_CTRL_002")).isPresent();
     }
 
-    @DisplayName("ADMIN이 아닌 사용자가 컨트롤러를 추가하려고 하면 실패한다")
+    @DisplayName("ADMIN, MANAGER 가 아닌 사용자가 컨트롤러를 추가하려고 하면 실패한다")
     @Test
     void addController_NonAdmin_Fail() throws Exception {
         // Given
-        setAuthentication(manager);
+        setAuthentication(user);
         AddControllerRequest request = new AddControllerRequest(
-                "CTRL001",  // controllerId
-                "1번",
-                20.0f,      // setTempLow
-                25.0f,      // setTempHigh
-                1.0f,       // tempGap
-                30.0f,      // heatTemp
-                1,          // iceType
-                1,          // alarmType
-                28.0f,      // alarmTempHigh
-                18.0f,      // alarmTempLow
-                "01012345678", // tel
-                true,       // awsEnabled
-                testGroup,  // group
-                user        // user
+                "TEST_CTRL_002",
+                "테스트2번",
+                20.0f,
+                25.0f,
+                1.0f,
+                30.0f,
+                1,
+                1,
+                28.0f,
+                18.0f,
+                "01012345678",
+                true,
+                user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
 
@@ -219,7 +217,7 @@ class ControllerControllerTest {
         // Given
         setAuthentication(admin);
         UpdateControllerRequest request = new UpdateControllerRequest(
-                "1번",
+                "테스트2번",
                 20.0f,
                 25.0f,
                 1.0f,
@@ -230,8 +228,7 @@ class ControllerControllerTest {
                 18.0f,
                 "01012345678",
                 true,
-                testGroup,
-                manager
+                user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
 
@@ -242,10 +239,10 @@ class ControllerControllerTest {
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Updated Controller")));
+                .andExpect(jsonPath("$.name", is("테스트2번")));
 
         Controller updatedController = controllerRepository.findById(testController.getId()).orElseThrow();
-        assertThat(updatedController.getName()).isEqualTo("Updated Controller");
+        assertThat(updatedController.getName()).isEqualTo("테스트2번");
     }
 
     @DisplayName("MANAGER가 컨트롤러 정보를 수정할 수 있다")
@@ -254,7 +251,7 @@ class ControllerControllerTest {
         // Given
         setAuthentication(manager);
         UpdateControllerRequest request = new UpdateControllerRequest(
-                "1번",
+                "테스트2번",
                 20.0f,
                 25.0f,
                 1.0f,
@@ -265,8 +262,7 @@ class ControllerControllerTest {
                 18.0f,
                 "01012345678",
                 true,
-                testGroup,
-                user
+                user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
 
@@ -277,19 +273,19 @@ class ControllerControllerTest {
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Updated Controller")));
+                .andExpect(jsonPath("$.name", is("테스트2번")));
 
         Controller updatedController = controllerRepository.findById(testController.getId()).orElseThrow();
-        assertThat(updatedController.getName()).isEqualTo("Updated Controller");
+        assertThat(updatedController.getName()).isEqualTo("테스트2번");
     }
 
-    @DisplayName("일반 USER가 컨트롤러 정보를 수정하려고 하면 실패한다")
+    @DisplayName("일반 USER가 컨트롤러 정보를 수정할 수 있다")
     @Test
     void updateController_User_Fail() throws Exception {
         // Given
         setAuthentication(user);
         UpdateControllerRequest request = new UpdateControllerRequest(
-                "1번",
+                "테스트2번",
                 20.0f,
                 25.0f,
                 1.0f,
@@ -300,8 +296,7 @@ class ControllerControllerTest {
                 18.0f,
                 "01012345678",
                 true,
-                testGroup,
-                user
+                user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
 
@@ -311,7 +306,11 @@ class ControllerControllerTest {
                 .content(requestBody));
 
         // Then
-        result.andExpect(status().isForbidden());
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("테스트2번")));
+
+        Controller updatedController = controllerRepository.findById(testController.getId()).orElseThrow();
+        assertThat(updatedController.getName()).isEqualTo("테스트2번");
     }
 
     @DisplayName("ADMIN이 컨트롤러를 삭제할 수 있다")

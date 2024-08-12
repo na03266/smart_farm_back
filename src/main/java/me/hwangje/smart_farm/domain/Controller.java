@@ -1,7 +1,9 @@
 package me.hwangje.smart_farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -64,20 +66,21 @@ public class Controller {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JsonProperty("userId")
+    public Long getUserId() {
+        return user != null ? user.getId() : null;
+    }
 
     @Builder
     public Controller(String controllerId, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
                       Integer iceType, Integer alarmType, Float alarmTempHigh, Float alarmTempLow,
-                      String tel, Boolean awsEnabled, User user, Group group, String name) {
+                      String tel, Boolean awsEnabled, User user, String name) {
         this.controllerId = controllerId;
         this.setTempLow = setTempLow;
         this.setTempHigh = setTempHigh;
@@ -90,13 +93,12 @@ public class Controller {
         this.tel = tel;
         this.awsEnabled = awsEnabled;
         this.user = user;
-        this.group = group;
         this.name = name;
     }
 
     public void update(String name, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
                        Integer iceType, Integer alarmType, Float alarmTempHigh, Float alarmTempLow,
-                       String tel, Boolean awsEnabled, User user, Group group) {
+                       String tel, Boolean awsEnabled, User user) {
         this.name = name;
         this.setTempLow = setTempLow;
         this.setTempHigh = setTempHigh;
@@ -108,7 +110,6 @@ public class Controller {
         this.alarmTempLow = alarmTempLow;
         this.tel = tel;
         this.awsEnabled = awsEnabled;
-        this.group = group;
         this.user = user;
     }
 }

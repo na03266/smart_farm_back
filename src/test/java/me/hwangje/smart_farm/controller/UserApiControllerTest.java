@@ -6,6 +6,7 @@ import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.UserDto.AddUserRequest;
 import me.hwangje.smart_farm.dto.UserDto.UpdateUserRequest;
+import me.hwangje.smart_farm.repository.ControllerRepository;
 import me.hwangje.smart_farm.repository.GroupRepository;
 import me.hwangje.smart_farm.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +51,10 @@ class UserApiControllerTest {
 
     @Autowired
     GroupRepository groupRepository;
+
+    @Autowired
+    ControllerRepository controllerRepository;
+
     User admin;
     User manager;
     User user;
@@ -60,6 +65,8 @@ class UserApiControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+        controllerRepository.deleteAll();
+
         userRepository.deleteAll();
         Group newGroup = groupRepository.save(Group.builder()
                 .name("New Group")
