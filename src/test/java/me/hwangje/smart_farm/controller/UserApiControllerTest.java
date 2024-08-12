@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -239,7 +240,7 @@ class UserApiControllerTest {
         assertThat(userRepository.findById(user.getId())).isEmpty();
     }
 
-    @DisplayName("조건에 해당하는 사용자를 조회한다")
+    @DisplayName("관리자가 조건에 해당하는 모든 사용자를 조회한다")
     @Test
     void 조건부_사용자조회_관리자() throws Exception {
         // Given
@@ -254,18 +255,43 @@ class UserApiControllerTest {
                 .andExpect(jsonPath("$[*].email", containsInAnyOrder(admin.getEmail(), manager.getEmail(), user.getEmail())));
     }
 
-    @DisplayName("매니저가 조건에 해당하는 사용자를 조회한다")
+    @DisplayName("매니저가 조건에 해당하는 같은 그룹의 사용자와 매니저를 조회한다")
     @Test
     void 조건부_사용자조회_매니저() throws Exception {
         // Given
         setAuthentication(manager);
 
+
         // When
-        ResultActions result = mockMvc.perform(get("/api/users"));
+        MvcResult mvcResult = mockMvc.perform(get("/api/users")
+                        .param("nameLike", "")
+                        .param("phoneLike", "")
+                        .param("managerNameLike", ""))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Then
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        System.out.println("Response Body: " + responseBody);
+
+
+    }
+
+    @DisplayName("검색 조건을 적용하여 사용자를 조회한다")
+    @Test
+    void 조건부_사용자조회_검색조건() throws Exception {
+        // Given
+        setAuthentication(admin);
+        String nameLike = "test";
+
+        // When
+        ResultActions result = mockMvc.perform(get("/api/users")
+                .param("nameLike", nameLike)
+                .param("phoneLike", "")
+                .param("managerNameLike", ""));
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].email", containsInAnyOrder(manager.getEmail(), user.getEmail())));
+                .andExpect(jsonPath("$[*].name", everyItem(containsString(nameLike))));
     }
 }

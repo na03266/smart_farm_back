@@ -1,7 +1,6 @@
 package me.hwangje.smart_farm.repository;
 
 import me.hwangje.smart_farm.domain.Group;
-import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +33,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("phoneLike") String phoneLike,
             @Param("managerNameLike") String managerNameLike
     );
+
+    Optional<User> findByName(String name);
 }
