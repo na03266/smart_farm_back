@@ -25,6 +25,7 @@ public class DeviceTimer {
     @Column(name = "timer_id")
     private int timerId;
 
+    @Lob
     @Column(name = "timer")
     private String timer;
 

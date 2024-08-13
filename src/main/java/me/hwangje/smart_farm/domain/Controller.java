@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "controllers")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,6 +78,18 @@ public class Controller {
     public Long getUserId() {
         return user != null ? user.getId() : null;
     }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "controller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeviceSetup> deviceSetups = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "controller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeviceTimer> deviceTimers = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "controller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SensorSetup> sensorsSetups = new ArrayList<>();
 
     @Builder
     public Controller(String controllerId, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
