@@ -1,7 +1,9 @@
 package me.hwangje.smart_farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,13 +20,16 @@ public class DeviceTimer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
     @Column(name = "timer_id")
-    private Integer timerId;
+    private int timerId;
 
     @Column(name = "timer")
     private String timer;
+
+    @Column(name = "name")
+    private String name;
 
     @LastModifiedDate
     @Column(name = "updated_at")
@@ -34,20 +39,28 @@ public class DeviceTimer {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "controller_id")
+    @JsonIgnore
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "controller_id",nullable = false)
     private Controller controller;
 
-    @Builder
-    public DeviceTimer(Integer timerId, String timer, Controller controller) {
-        this.timerId = timerId;
-        this.timer = timer;
-        this.controller = controller;
+    @JsonProperty("controllerId")
+    public Long getControllerId(){
+        return controller != null ? controller.getId() : null;
     }
 
-    public void update(Integer timerId, String timer, Controller controller) {
+    @Builder
+    public DeviceTimer(Integer timerId, String timer, Controller controller, String name) {
         this.timerId = timerId;
         this.timer = timer;
         this.controller = controller;
+        this.name = name;
+    }
+
+    public void update(Integer timerId, String timer, String name) {
+        this.timerId = timerId;
+        this.timer = timer;
+        this.name = name;
     }
 }

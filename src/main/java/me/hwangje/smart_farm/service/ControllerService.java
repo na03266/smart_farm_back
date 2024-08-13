@@ -6,13 +6,18 @@ import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.ControllerDto.AddControllerRequest;
 import me.hwangje.smart_farm.dto.ControllerDto.UpdateControllerRequest;
+import me.hwangje.smart_farm.dto.DeviceSetupDto;
+import me.hwangje.smart_farm.dto.DeviceTimerDto;
+import me.hwangje.smart_farm.dto.SensorSetupDto;
 import me.hwangje.smart_farm.repository.ControllerRepository;
 import me.hwangje.smart_farm.repository.UserRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -20,6 +25,13 @@ import java.util.List;
 public class ControllerService {
     private final ControllerRepository controllerRepository;
     private final UserRepository userRepository;
+    @Lazy
+    private final DeviceSetupService deviceSetupService;
+    @Lazy
+    private final DeviceTimerService deviceTimerService;
+    @Lazy
+    private final SensorSetupService sensorSetupService;
+
 
     // Create
     @Transactional
@@ -140,5 +152,56 @@ public class ControllerService {
             throw new IllegalArgumentException("You don't have permission to delete this controller.");
         }
         controllerRepository.delete(controller);
+    }
+
+    @Transactional
+    public void createDefaultDeviceSetups(Controller controller) {
+        for (int i = 0; i < 16; i++) {
+            DeviceSetupDto.AddDeviceSetupRequest deviceSetupRequest = DeviceSetupDto.AddDeviceSetupRequest.builder()
+                    .unitId(i)
+                    .unitType(false)
+                    .unitCh(0)
+                    .unitOpenCh(0)
+                    .unitCloseCh(0)
+                    .unitMoveTime(0)
+                    .unitStopTime(0)
+                    .unitOpenTime(0)
+                    .unitCloseTime(0)
+                    .operationType(0)
+                    .timerSet(0)
+                    .build();
+
+            deviceSetupService.save(deviceSetupRequest, controller);
+        }
+    }
+
+    @Transactional
+    public void createDefaultDeviceTimers(Controller controller) {
+        String defaultTimer = String.join("", Collections.nCopies(1440, "0"));
+
+        for (int i = 0; i < 16; i++) {
+            DeviceTimerDto.AddDeviceTimerRequest deviceTimerRequest = DeviceTimerDto.AddDeviceTimerRequest.builder()
+                    .timerId(i)
+                    .timer(defaultTimer)
+                    .name((i) + "번")  // 1번부터 16번까지
+                    .build();
+
+            deviceTimerService.save(deviceTimerRequest, controller);
+        }
+    }
+
+    @Transactional
+    public void createDefaultSensorSetup(Controller controller) {
+        for (int i = 0; i < 9; i++) {
+            SensorSetupDto.AddSensorSetupRequest sensorSetupRequest = SensorSetupDto.AddSensorSetupRequest.builder()
+                    .sensorId(i)
+                    .sensorCh(0)
+                    .sensorReserved(0)
+                    .sensorMult(0.0F)
+                    .sensorOffset(0.0F)
+                    .sensorFormula("")
+                    .build();
+            sensorSetupService.save(sensorSetupRequest, controller);
+        }
     }
 }

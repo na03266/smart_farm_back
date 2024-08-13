@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.Controller;
-import me.hwangje.smart_farm.dto.ControllerDto.*;
+import me.hwangje.smart_farm.dto.ControllerDto.AddControllerRequest;
+import me.hwangje.smart_farm.dto.ControllerDto.ControllerResponse;
+import me.hwangje.smart_farm.dto.ControllerDto.UpdateControllerRequest;
 import me.hwangje.smart_farm.service.ControllerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,10 @@ public class ControllerController {
     @PostMapping
     public ResponseEntity<ControllerResponse> addController(@RequestBody AddControllerRequest request) {
         Controller savedController = controllerService.save(request);
+
+        controllerService.createDefaultDeviceTimers(savedController);
+        controllerService.createDefaultDeviceSetups(savedController);
+        controllerService.createDefaultSensorSetup(savedController);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ControllerResponse(savedController));
