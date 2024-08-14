@@ -54,8 +54,7 @@ public class DeviceTimerService {
 
     // Delete
     @Transactional
-    public void delete(Long id) {
-        DeviceTimer deviceTimer = findById(id);
-        deviceTimerRepository.delete(deviceTimer);
+    public void deleteAllByController(Controller controller) {
+        deviceTimerRepository.deleteAllByController(controller);
     }
 }

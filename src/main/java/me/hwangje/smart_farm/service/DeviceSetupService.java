@@ -74,4 +74,10 @@ public class DeviceSetupService {
         DeviceSetup deviceSetup = findById(id);
         deviceSetupRepository.delete(deviceSetup);
     }
+
+    @Transactional
+    public void deleteAllByController(Controller controller) {
+        deviceSetupRepository.deleteAllByController(controller);
+
+    }
 }

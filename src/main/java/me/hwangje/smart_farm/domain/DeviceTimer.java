@@ -42,8 +42,8 @@ public class DeviceTimer {
 
     @JsonIgnore
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "controller_id",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "controller_id")
     private Controller controller;
 
     @JsonProperty("controllerId")

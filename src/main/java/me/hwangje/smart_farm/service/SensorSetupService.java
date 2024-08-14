@@ -65,4 +65,9 @@ public class SensorSetupService {
         SensorSetup sensorSetup = findById(id);
         sensorSetupRepository.delete(sensorSetup);
     }
+
+    @Transactional
+    public void deleteAllByController(Controller controller) {
+        sensorSetupRepository.deleteAllByController(controller);
+    }
 }

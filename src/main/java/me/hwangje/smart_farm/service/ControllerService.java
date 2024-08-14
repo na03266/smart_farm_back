@@ -151,6 +151,10 @@ public class ControllerService {
         if (user.getRole().equals(Role.USER)) {
             throw new IllegalArgumentException("You don't have permission to delete this controller.");
         }
+        deviceTimerService.deleteAllByController(controller);
+        deviceSetupService.deleteAllByController(controller);
+        sensorSetupService.deleteAllByController(controller);
+
         controllerRepository.delete(controller);
     }
 

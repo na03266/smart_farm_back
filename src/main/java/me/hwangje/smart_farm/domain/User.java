@@ -42,7 +42,7 @@ public class User implements UserDetails {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id", nullable = true)
+    @JoinColumn(name = "group_id")
     private Group group;
 
     @Getter
@@ -60,7 +60,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private List<Controller> controllers = new ArrayList<>();
 
     @Override // 권한 반환

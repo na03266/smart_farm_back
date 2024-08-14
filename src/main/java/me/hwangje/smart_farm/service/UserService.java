@@ -74,8 +74,6 @@ public class UserService {
     public void delete(Long id) {
         User user = findById(id);
 
-        // 사용자와 연관된 컨트롤러 제거
-        user.getControllers().clear();
 
         // 사용자가 속한 그룹에서 사용자 제거
         if (user.getGroup() != null) {

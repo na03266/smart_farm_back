@@ -10,6 +10,7 @@ import me.hwangje.smart_farm.repository.ControllerRepository;
 import me.hwangje.smart_farm.repository.GroupRepository;
 import me.hwangje.smart_farm.repository.UserRepository;
 import me.hwangje.smart_farm.service.ControllerService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -353,5 +354,11 @@ class ControllerApiControllerTest {
         // Then
         result.andExpect(status().isForbidden());
         assertThat(controllerRepository.findById(testController.getId())).isPresent();
+    }
+    @AfterEach
+    public void end() {
+        controllerRepository.deleteAll();
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 }

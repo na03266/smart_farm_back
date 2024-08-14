@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/controllers")
 @Tag(name = "Controller", description = "컨트롤러 관련 API")
-public class ControllerController {
+public class ControllerApiController {
     private final ControllerService controllerService;
 
     @Operation(summary = "컨트롤러 추가", description = "새로운 컨트롤러를 생성, ADMIN 권한 필요.")
