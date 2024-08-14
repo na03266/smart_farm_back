@@ -65,9 +65,10 @@ class UserApiControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        controllerRepository.deleteAll();
 
+        controllerRepository.deleteAll();
         userRepository.deleteAll();
+
         Group newGroup = groupRepository.save(Group.builder()
                 .name("New Group")
                 .contact("01099999999")
@@ -158,7 +159,7 @@ class UserApiControllerTest {
         setAuthentication(user);
 
 
-        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "두통", user.getGroup(), Role.USER);
+        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "두통", user.getGroup().getId(), Role.USER);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -185,7 +186,7 @@ class UserApiControllerTest {
                 .registrationNumber("9876543210")
                 .build());
 
-        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup, Role.USER);
+        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup.getId(), Role.USER);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -214,7 +215,7 @@ class UserApiControllerTest {
                 .registrationNumber("9876543210")
                 .build());
 
-        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup, Role.USER);
+        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup.getId(), Role.USER);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When

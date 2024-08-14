@@ -1,7 +1,9 @@
 package me.hwangje.smart_farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,9 +40,9 @@ public class User implements UserDetails {
     @Column(name = "manager")
     private String manager;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "group_id", nullable = true)
     private Group group;
 
     @Getter
@@ -56,6 +59,9 @@ public class User implements UserDetails {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Controller> controllers = new ArrayList<>();
 
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -110,11 +116,11 @@ public class User implements UserDetails {
     }
 
     // 사용자 이름 변경
-    public User update(String name, String phoneNumber, String password, Role role, Group group, String manager) {
+    public User update(String name, String contact, String password, Role role, Group group, String manager) {
         if (name != null) {
             this.name = name;
         }
-        if (phoneNumber != null) {
+        if (contact != null) {
             this.contact = contact;
         }
         if (password != null) {
@@ -130,5 +136,27 @@ public class User implements UserDetails {
             this.manager = manager;
         }
         return this;
+    }
+
+    public void setGroup(Group group) {
+        // 기존 그룹과의 관계를 제거
+        if (this.group != null) {
+            this.group.getUsers().remove(this);
+        }
+        this.group = group;
+        // 새 그룹과의 관계를 설정
+        if (group != null) {
+            group.getUsers().add(this);
+        }
+    }
+
+    public void addController(Controller controller) {
+        controllers.add(controller);
+        controller.setUser(this);
+    }
+
+    public void removeController(Controller controller) {
+        controllers.remove(controller);
+        controller.setUser(null);
     }
 }

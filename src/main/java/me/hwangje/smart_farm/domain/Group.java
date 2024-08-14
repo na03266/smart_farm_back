@@ -1,10 +1,13 @@
 package me.hwangje.smart_farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -41,6 +44,10 @@ public class Group {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
+    private List<User> users = new ArrayList<>();
+
     @Builder
     public Group(String name, String contact, String registrationNumber) {
         this.name = name;
@@ -54,4 +61,24 @@ public class Group {
         this.registrationNumber = registrationNumber;
     }
 
+    public void addUser(User user) {
+        if (!this.users.contains(user)) {
+            this.users.add(user);
+            user.setGroup(this);
+        }
+    }
+
+    public void removeUser(User user) {
+        if (this.users.contains(user)) {
+            this.users.remove(user);
+            user.setGroup(null);
+        }
+    }
+
+    public void removeAllUsers() {
+        for (User user : new ArrayList<>(users)) {
+            user.setGroup(null);
+        }
+        this.users.clear();
+    }
 }

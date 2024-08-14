@@ -2,8 +2,10 @@ package me.hwangje.smart_farm.service;
 
 import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.Group;
+import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.GroupDto.*;
 import me.hwangje.smart_farm.repository.GroupRepository;
+import me.hwangje.smart_farm.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class GroupService {
     private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
 
     // Create
     @Transactional
@@ -54,6 +57,11 @@ public class GroupService {
     @Transactional
     public void delete(Long id) {
         Group group = findById(id);
+
+        // 그룹에 속한 사용자들의 그룹 참조를 null로 설정
+        group.removeAllUsers();
+
+        // 그룹 삭제
         groupRepository.delete(group);
     }
 }

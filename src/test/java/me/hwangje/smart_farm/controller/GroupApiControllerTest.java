@@ -1,6 +1,7 @@
 package me.hwangje.smart_farm.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import me.hwangje.smart_farm.domain.Group;
 import me.hwangje.smart_farm.domain.Role;
 import me.hwangje.smart_farm.domain.User;
@@ -230,7 +231,9 @@ class GroupApiControllerTest {
         assertThat(groupRepository.findById(group.getId())).isEmpty();
     }
 
-    private Group createDefaultGroup() {
+
+    @Transactional
+    public Group createDefaultGroup() {
         return groupRepository.save(Group.builder()
                 .name("Default Group")
                 .contact("01011111111")

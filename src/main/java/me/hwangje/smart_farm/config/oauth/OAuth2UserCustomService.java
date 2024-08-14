@@ -29,15 +29,21 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
-        User user = userRepository.findByEmail(email)
-                .map(entity -> entity.update(name, null, null, null, null, null))
-                .orElse(User.builder()
-                        .email(email)
-                        .name(name)
-                        .role(Role.USER)
-                        .build());
-
-        return userRepository.save(user);
+        return userRepository.findByEmail(email)
+                .map(entity -> {
+                    // 기존 사용자 정보 업데이트
+                    entity.update(name, entity.getContact(), entity.getPassword(), entity.getRole(), entity.getGroup(), entity.getManager());
+                    return userRepository.save(entity);
+                })
+                .orElseGet(() -> {
+                    // 새 사용자 생성
+                    User newUser = User.builder()
+                            .email(email)
+                            .name(name)
+                            .role(Role.USER)
+                            .build();
+                    return userRepository.save(newUser);
+                });
     }
 
 }

@@ -70,8 +70,8 @@ public class Controller {
 
     @JsonIgnore
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "user_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @JsonProperty("userId")

@@ -16,20 +16,8 @@ public class UserDto {
         private String name;
         private String contact;
         private String manager;
-        private Group group;
         private Role role;
-
-        public User toEntity() {
-            return User.builder()
-                    .email(email)
-                    .password(password)
-                    .name(name)
-                    .contact(contact)
-                    .manager(manager)
-                    .group(group)
-                    .role(role)
-                    .build();
-        }
+        private Long groupId;
     }
 
     @Getter
@@ -61,7 +49,7 @@ public class UserDto {
         private String name;
         private String contact;
         private String manager;
-        private Group group;
+        private Long groupId;
         private Role role;
 
     }
