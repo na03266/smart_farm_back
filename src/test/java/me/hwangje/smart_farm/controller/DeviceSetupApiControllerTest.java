@@ -3,9 +3,9 @@ package me.hwangje.smart_farm.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.hwangje.smart_farm.domain.*;
 import me.hwangje.smart_farm.dto.ControllerDto;
-import me.hwangje.smart_farm.dto.DeviceTimerDto.UpdateDeviceTimerRequest;
+import me.hwangje.smart_farm.dto.DeviceSetupDto.UpdateDeviceSetupRequest;
 import me.hwangje.smart_farm.repository.ControllerRepository;
-import me.hwangje.smart_farm.repository.DeviceTimerRepository;
+import me.hwangje.smart_farm.repository.DeviceSetupRepository;
 import me.hwangje.smart_farm.repository.GroupRepository;
 import me.hwangje.smart_farm.repository.UserRepository;
 import me.hwangje.smart_farm.service.ControllerService;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class DeviceTimerApiControllerTest {
+class DeviceSetupApiControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -48,7 +48,7 @@ class DeviceTimerApiControllerTest {
     private WebApplicationContext context;
 
     @Autowired
-    DeviceTimerRepository deviceTimerRepository;
+    DeviceSetupRepository deviceSetupRepository;
 
     @Autowired
     ControllerRepository controllerRepository;
@@ -68,7 +68,7 @@ class DeviceTimerApiControllerTest {
     User admin;
     User user;
     Controller testController;
-    DeviceTimer testDeviceTimer;
+    DeviceSetup testDeviceSetup;
     Group testGroup;
     ControllerDto.AddControllerRequest request;
 
@@ -79,7 +79,7 @@ class DeviceTimerApiControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        deviceTimerRepository.deleteAll();
+        deviceSetupRepository.deleteAll();
         controllerRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
@@ -138,70 +138,75 @@ class DeviceTimerApiControllerTest {
         return controllerRepository.findByControllerId(request.getControllerId())
                 .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
     }
-
-    @DisplayName("컨트롤러 생성 시 기본 디바이스 타이머가 함께 생성된다")
+    @DisplayName("컨트롤러 생성 시 기본 디바이스 셋업이 함께 생성된다")
     @Test
-    void createController_CreatesDefaultDeviceTimers() throws Exception {
+    void createController_CreatesDefaultDeviceSetups() throws Exception {
         // Given & When
         testController = createController(request);
 
         // Then
         assertThat(testController).isNotNull();
-        assertThat(deviceTimerRepository.findAllByController_Id(testController.getId()))
+        assertThat(deviceSetupRepository.findAllByController_Id(testController.getId()))
                 .hasSize(16)
-                .allSatisfy(timer -> {
-                    assertThat(timer.getController().getId()).isEqualTo(testController.getId());
-                    assertThat(timer.getTimerId()).isIn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+                .allSatisfy(device -> {
+                    assertThat(device.getController().getId()).isEqualTo(testController.getId());
+                    assertThat(device.getUnitId()).isIn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
                 });
     }
-
-    @DisplayName("컨트롤러 ID로 모든 디바이스 타이머를 조회한다")
+    @DisplayName("컨트롤러 ID로 모든 디바이스 셋업을 조회한다")
     @Test
-    void findAllDeviceTimers_Success() throws Exception {
+    void findAllDeviceSetups() throws Exception {
         // Given
         testController = createController(request);
 
         // When
-        ResultActions result = mockMvc.perform(get("/api/device-timers/{controllerId}", testController.getId()));
+        ResultActions result = mockMvc.perform(get("/api/device-setups/{controllerId}", testController.getId()));
 
         // Then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(16)))
-                .andExpect(jsonPath("$[0].timerId", is(0)));
+                .andExpect(jsonPath("$[0].timerSet", is(0)));
     }
 
-    @DisplayName("디바이스 타이머 정보를 수정한다")
+    @DisplayName("디바이스 셋업 정보를 수정한다")
     @Test
-    void updateDeviceTimer_Success() throws Exception {
+    void updateDeviceSetup() throws Exception{
         // Given
         testController = createController(request);
-        testDeviceTimer = deviceTimerRepository.findAllByController_Id(testController.getId()).get(0);
+        testDeviceSetup = deviceSetupRepository.findAllByController_Id(testController.getId()).get(0);
 
-        UpdateDeviceTimerRequest updateRequest = new UpdateDeviceTimerRequest(
-                testDeviceTimer.getTimerId(),
-                testDeviceTimer.getTimer(),
-                "조까"
+        UpdateDeviceSetupRequest updateRequest = new UpdateDeviceSetupRequest(
+                testDeviceSetup.getUnitId(),
+                testDeviceSetup.getUnitType(),
+                testDeviceSetup.getUnitCh(),
+                testDeviceSetup.getUnitOpenCh(),
+                testDeviceSetup.getUnitCloseCh(),
+                testDeviceSetup.getUnitMoveTime(),
+                testDeviceSetup.getUnitStopTime(),
+                testDeviceSetup.getUnitOpenTime(),
+                testDeviceSetup.getUnitCloseTime(),
+                testDeviceSetup.getOperationType(),
+                13
         );
         String requestBody = objectMapper.writeValueAsString(updateRequest);
 
         // When
-        ResultActions result = mockMvc.perform(put("/api/device-timers/{id}", testDeviceTimer.getId())
+        ResultActions result = mockMvc.perform(put("/api/device-setups/{id}", testDeviceSetup.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody));
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("조까")));
+                .andExpect(jsonPath("$.timerSet", is(13)));
     }
-
-    @DisplayName("컨트롤러 삭제 시 관련 디바이스 타이머가 함께 삭제된다")
+    @DisplayName("컨트롤러 삭제 시 관련 디바이스 셋업이 함께 삭제된다")
     @Test
     @Transactional
     void deleteController_deleteRelatedDeviceTimers() throws Exception {
         // Given
         testController = createController(request);
         Long controllerId = testController.getId();
-        assertThat(deviceTimerRepository.findAllByController_Id(controllerId)).isNotEmpty();
+        assertThat(deviceSetupRepository.findAllByController_Id(controllerId)).isNotEmpty();
 
         // When
         ResultActions result = mockMvc.perform(delete("/api/controllers/{id}", controllerId));
@@ -210,6 +215,6 @@ class DeviceTimerApiControllerTest {
         result.andExpect(status().isOk());
 
         assertThat(controllerRepository.findById(controllerId)).isEmpty();
-        assertThat(deviceTimerRepository.findAllByController_Id(controllerId)).isEmpty();
+        assertThat(deviceSetupRepository.findAllByController_Id(controllerId)).isEmpty();
     }
 }
