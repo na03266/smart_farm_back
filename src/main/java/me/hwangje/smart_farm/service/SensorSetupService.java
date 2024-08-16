@@ -3,8 +3,8 @@ package me.hwangje.smart_farm.service;
 import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.Controller;
 import me.hwangje.smart_farm.domain.SensorSetup;
-import me.hwangje.smart_farm.dto.SensorSetupDto.*;
-import me.hwangje.smart_farm.repository.ControllerRepository;
+import me.hwangje.smart_farm.dto.SensorSetupDto.AddSensorSetupRequest;
+import me.hwangje.smart_farm.dto.SensorSetupDto.UpdateSensorSetupRequest;
 import me.hwangje.smart_farm.repository.SensorSetupRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SensorSetupService {
     private final SensorSetupRepository sensorSetupRepository;
-    private final ControllerRepository controllerRepository;
 
     // Create
     @Transactional
