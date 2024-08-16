@@ -91,6 +91,10 @@ public class Controller {
     @OneToMany(mappedBy = "controller", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SensorSetup> sensorsSetups = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "controller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeviceStatus> deviceStatuses = new ArrayList<>();
+
     @Builder
     public Controller(String controllerId, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
                       Integer iceType, Integer alarmType, Float alarmTempHigh, Float alarmTempLow,

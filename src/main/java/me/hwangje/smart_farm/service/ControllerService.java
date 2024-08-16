@@ -7,6 +7,7 @@ import me.hwangje.smart_farm.domain.User;
 import me.hwangje.smart_farm.dto.ControllerDto.AddControllerRequest;
 import me.hwangje.smart_farm.dto.ControllerDto.UpdateControllerRequest;
 import me.hwangje.smart_farm.dto.DeviceSetupDto;
+import me.hwangje.smart_farm.dto.DeviceStatusDto;
 import me.hwangje.smart_farm.dto.DeviceTimerDto;
 import me.hwangje.smart_farm.dto.SensorSetupDto;
 import me.hwangje.smart_farm.repository.ControllerRepository;
@@ -31,7 +32,8 @@ public class ControllerService {
     private final DeviceTimerService deviceTimerService;
     @Lazy
     private final SensorSetupService sensorSetupService;
-
+    @Lazy
+    private final DeviceStatusService deviceStatusService;
 
     // Create
     @Transactional
@@ -154,6 +156,7 @@ public class ControllerService {
         deviceTimerService.deleteAllByController(controller);
         deviceSetupService.deleteAllByController(controller);
         sensorSetupService.deleteAllByController(controller);
+        deviceStatusService.deleteAllByController(controller);
 
         controllerRepository.delete(controller);
     }
@@ -206,6 +209,19 @@ public class ControllerService {
                     .sensorFormula("")
                     .build();
             sensorSetupService.save(sensorSetupRequest, controller);
+        }
+    }
+
+    @Transactional
+    public void createDefaultDeviceStatus(Controller controller) {
+        for (int i = 0; i < 16; i++) {
+            DeviceStatusDto.AddDeviceStatusRequest deviceStatusRequest = DeviceStatusDto.AddDeviceStatusRequest.builder()
+                    .unitId(i)
+                    .status(0)
+                    .isAutoMode(false)
+                    .build();
+
+            deviceStatusService.save(deviceStatusRequest, controller);
         }
     }
 }

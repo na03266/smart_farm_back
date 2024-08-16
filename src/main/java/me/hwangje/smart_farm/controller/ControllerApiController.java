@@ -37,6 +37,7 @@ public class ControllerApiController {
         controllerService.createDefaultDeviceTimers(savedController);
         controllerService.createDefaultDeviceSetups(savedController);
         controllerService.createDefaultSensorSetup(savedController);
+        controllerService.createDefaultDeviceStatus(savedController);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ControllerResponse(savedController));
