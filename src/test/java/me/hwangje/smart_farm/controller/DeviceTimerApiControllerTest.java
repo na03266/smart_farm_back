@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class DeviceTimerApiControllerTest {
 
     @Autowired
@@ -78,11 +79,6 @@ class DeviceTimerApiControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-
-        deviceTimerRepository.deleteAll();
-        controllerRepository.deleteAll();
-        userRepository.deleteAll();
-        groupRepository.deleteAll();
 
         testGroup = groupRepository.save(Group.builder()
                 .name("Test Group")
