@@ -91,6 +91,8 @@ erDiagram
         string controller_id FK "컨트롤러 ID"
     }
 
+
+    
     sensor_data {
         bigint id PK "센서 데이터 고유 번호"
         int sensor_id "센서 ID"
@@ -107,5 +109,17 @@ erDiagram
         timestamp updated_at "상태 갱신 시간"
         timestamp created_at "상태 생성 시간"
         string controller_id FK "컨트롤러 ID"
+    }
+    
+    sensor_info{
+        bigint id PK "센서 설정 고유 번호"
+        int sensor_id "센서 ID"
+        string name "센서명"
+    }
+    
+    device_info{
+        bigint id PK "장치 설정 고유 번호"
+        int device_id "장치 ID"
+        string name "장치 명"
     }
 ```
