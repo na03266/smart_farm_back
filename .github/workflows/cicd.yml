@@ -40,7 +40,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            mkdir -p ~/app
             echo "${{ secrets.APPLICATION_YML }}" > ~/app/application.yml
             cp ${{ github.workspace }}/build/libs/*.jar ~/app/app.jar
             sudo systemctl restart your-app-service

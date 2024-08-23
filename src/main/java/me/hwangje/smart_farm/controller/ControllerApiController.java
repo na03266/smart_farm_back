@@ -24,7 +24,8 @@ import java.util.List;
 public class ControllerApiController {
     private final ControllerService controllerService;
 
-    @Operation(summary = "컨트롤러 추가", description = "새로운 컨트롤러를 생성, ADMIN 권한 필요.")
+    @Operation(summary = "컨트롤러 추가", description = "새로운 컨트롤러를 생성, ADMIN 권한 필요." +
+            "컨트롤러 생성 시 센서셋업 9개, 타이머 16개, 장치셋업 16개, 장치 상태 16개 가 동시에 생성됨")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "컨트롤러 생성 성공"),
             @ApiResponse(responseCode = "403", description = "권한 없음")
@@ -43,7 +44,11 @@ public class ControllerApiController {
                 .body(new ControllerResponse(savedController));
     }
 
-    @Operation(summary = "할당된 모든 컨트롤러 조회", description = "모든 컨트롤러를 조회, 권한에 따라 결과가 다름.")
+    @Operation(summary = "할당된 모든 컨트롤러 조회",
+            description = "모든 컨트롤러를 조회, 권한에 따라 결과가 다름. /n" +
+                    "ADMIN: 모두 조회, /n" +
+                    "MANAGER: 같은 그룹에 소속된 모든 사용자 검색/n" +
+                    "USER: 본인 소유만 조회 가능")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "권한 없음")
