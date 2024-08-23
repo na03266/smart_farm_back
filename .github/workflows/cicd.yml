@@ -1,0 +1,46 @@
+# 워크플로의 이름 지정
+name: CI/CD
+
+# 워크플로가 시작될 조건 지정
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 실행 환경 지정
+    #실행 스탭 지정
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant excute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: GetCurrent time
+        uses: josStorer/get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Set artifact
+        run: echo "artifact=$(ls ./build/libs)" >> @GITHUB_ENV
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            mkdir -p ~/app
+            echo "${{ secrets.APPLICATION_YML }}" > ~/app/application.yml
+            cp ${{ github.workspace }}/build/libs/*.jar ~/app/app.jar
+            sudo systemctl restart your-app-service
