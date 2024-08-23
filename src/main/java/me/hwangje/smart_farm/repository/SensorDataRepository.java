@@ -18,9 +18,9 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
             "SELECT " +
                     "   sd.sensor_id AS sensorId, " +
                     "   AVG(sd.sensor_value) AS averageValue, " +
-                    "   DATEADD('MINUTE', " +
-                    "      30 * FLOOR(MINUTE(sd.recorded_at) / 30), " +
-                    "      DATEADD('HOUR', DATEDIFF('HOUR', TIMESTAMP '1970-01-01 00:00:00', sd.recorded_at), TIMESTAMP '1970-01-01 00:00:00')" +
+                    "   DATE_ADD(" +
+                    "      DATE(sd.recorded_at), " +
+                    "      INTERVAL (FLOOR(MINUTE(sd.recorded_at) / 30) * 30) MINUTE" +
                     "   ) AS timeBlock " +
                     "FROM sensor_data sd " +
                     "WHERE sd.controller_id = :controllerId " +

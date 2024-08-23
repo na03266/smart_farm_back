@@ -35,7 +35,6 @@ public class WebOAuthSecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return web -> web.ignoring()
-                .requestMatchers(toH2Console())
                 .requestMatchers(
                         new AntPathRequestMatcher("/img/**"),
                         new AntPathRequestMatcher("/css/**"),
