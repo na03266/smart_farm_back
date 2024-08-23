@@ -38,7 +38,7 @@ public class MqttConfig {
     @Bean
     public MqttConnectOptions mqttConnectOptions() {
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[] { brokerUrl });
+        options.setServerURIs(new String[]{brokerUrl});
         options.setCleanSession(true);
         if (!username.isEmpty()) {
             options.setUserName(username);
@@ -79,10 +79,32 @@ public class MqttConfig {
 
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
-    public MessageHandler mqttOutbound() {
+    public MqttPahoMessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
         messageHandler.setAsync(true);
         messageHandler.setDefaultTopic("defaultTopic");
         return messageHandler;
+    }
+
+    // MqttPahoMessageDrivenChannelAdapter를 Bean으로 노출
+    @Bean
+    public MqttPahoMessageDrivenChannelAdapter mqttInbound() {
+        MqttPahoMessageDrivenChannelAdapter adapter =
+                new MqttPahoMessageDrivenChannelAdapter(clientId + "_inbound", mqttClientFactory(), topics) {
+                    @Override
+                    protected void doStop() {
+                        try {
+                            super.doStop();
+                        } catch (Exception e) {
+                            // 로그만 남기고 예외를 무시합니다.
+                            logger.warn(e, "Error occurred while stopping MQTT inbound adapter");
+                        }
+                    }
+                };
+        adapter.setCompletionTimeout(5000);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(qos);
+        adapter.setOutputChannel(mqttInputChannel());
+        return adapter;
     }
 }
