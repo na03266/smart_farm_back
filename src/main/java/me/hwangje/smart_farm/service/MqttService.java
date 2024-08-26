@@ -81,7 +81,8 @@ public class MqttService {
                 // 센서 데이터 처리
                 break;
             case "SETUP":
-                // 센서 데이터 처리
+                // 셋업 데이터 처리
+
                 break;
             default:
                 System.out.println("Unknown SMARTFARM sub-topic: " + subTopic);
