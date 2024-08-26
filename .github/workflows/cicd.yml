@@ -47,4 +47,4 @@ jobs:
           script: |
             echo "${{ secrets.APPLICATION_YML }}" > ~/app/application.yml
             cp ${{ github.workspace }}/build/libs/*.jar ~/app/app.jar
-            sudo systemctl restart your-app-service
+            sudo systemctl restart smartfarm.service
