@@ -22,7 +22,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
     implementation 'org.springframework.integration:spring-integration-mqtt'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.0' // 현재 버전 확인 후 적절한 버전 사용
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'// 현재 버전 확인 후 적절한 버전 사용
 //    runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

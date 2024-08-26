@@ -13,7 +13,6 @@ import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannel
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
 
 @Configuration
 public class MqttConfig {
@@ -98,6 +97,8 @@ public class MqttConfig {
                         } catch (Exception e) {
                             // 로그만 남기고 예외를 무시합니다.
                             logger.warn(e, "Error occurred while stopping MQTT inbound adapter");
+                            logger.error(e, "MQTT 인바운드 어댑터 종료 중 오류 발생");
+
                         }
                     }
                 };
