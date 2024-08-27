@@ -31,16 +31,16 @@ public class Controller {
     private String name;
 
     @Column(name = "set_temp_low")
-    private Float setTempLow;
+    private String setTempLow;
 
     @Column(name = "set_temp_high")
-    private Float setTempHigh;
+    private String setTempHigh;
 
     @Column(name = "temp_gap")
-    private Float tempGap;
+    private Integer tempGap;
 
     @Column(name = "heat_temp")
-    private Float heatTemp;
+    private Integer heatTemp;
 
     @Column(name = "ice_type")
     private Integer iceType;
@@ -49,16 +49,16 @@ public class Controller {
     private Integer alarmType;
 
     @Column(name = "alarm_temp_high")
-    private Float alarmTempHigh;
+    private Integer alarmTempHigh;
 
     @Column(name = "alarm_temp_low")
-    private Float alarmTempLow;
+    private Integer alarmTempLow;
 
     @Column(name = "tel")
     private String tel;
 
     @Column(name = "aws_enabled")
-    private Boolean awsEnabled;
+    private Integer awsEnabled;
 
     @LastModifiedDate
     @Column(name = "updated_at")
@@ -100,9 +100,9 @@ public class Controller {
     private List<SensorData> sensorData = new ArrayList<>();
 
     @Builder
-    public Controller(String controllerId, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
-                      Integer iceType, Integer alarmType, Float alarmTempHigh, Float alarmTempLow,
-                      String tel, Boolean awsEnabled, User user, String name) {
+    public Controller(String controllerId, String setTempLow, String setTempHigh, Integer tempGap, Integer heatTemp,
+                      Integer iceType, Integer alarmType, Integer alarmTempHigh, Integer alarmTempLow,
+                      String tel, Integer awsEnabled, User user, String name) {
         this.controllerId = controllerId;
         this.setTempLow = setTempLow;
         this.setTempHigh = setTempHigh;
@@ -118,9 +118,9 @@ public class Controller {
         this.name = name;
     }
 
-    public void update(String name, Float setTempLow, Float setTempHigh, Float tempGap, Float heatTemp,
-                       Integer iceType, Integer alarmType, Float alarmTempHigh, Float alarmTempLow,
-                       String tel, Boolean awsEnabled, User user) {
+    public void update(String name, String setTempLow, String setTempHigh, Integer tempGap, Integer heatTemp,
+                       Integer iceType, Integer alarmType, Integer alarmTempHigh, Integer alarmTempLow,
+                       String tel, Integer awsEnabled, User user) {
         this.name = name;
         this.setTempLow = setTempLow;
         this.setTempHigh = setTempHigh;

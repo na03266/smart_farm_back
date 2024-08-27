@@ -88,16 +88,16 @@ class ControllerApiControllerTest {
         testController = controllerRepository.save(Controller.builder()
                 .controllerId("TEST_CTRL_001")
                 .name("테스트컨트롤러")
-                .setTempLow(20.0f)
-                .setTempHigh(25.0f)
-                .tempGap(1.0f)
-                .heatTemp(30.0f)
+                .setTempLow("20")
+                .setTempHigh("25")
+                .tempGap(1)
+                .heatTemp(30)
                 .iceType(1)
                 .alarmType(1)
-                .alarmTempHigh(28.0f)
-                .alarmTempLow(18.0f)
+                .alarmTempHigh(28)
+                .alarmTempLow(18)
                 .tel("01012345678")
-                .awsEnabled(true)
+                .awsEnabled(1)
                 .user(user)
                 .build());
     }
@@ -126,16 +126,16 @@ class ControllerApiControllerTest {
         AddControllerRequest request = new AddControllerRequest(
                 "TEST_CTRL_002",
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20",
+                "25",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
@@ -160,16 +160,16 @@ class ControllerApiControllerTest {
         AddControllerRequest request = new AddControllerRequest(
                 "TEST_CTRL_002",
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20",
+                "25",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
@@ -219,16 +219,16 @@ class ControllerApiControllerTest {
         setAuthentication(admin);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20",
+                "25",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
@@ -253,16 +253,16 @@ class ControllerApiControllerTest {
         setAuthentication(manager);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20",
+                "25",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);
@@ -287,16 +287,16 @@ class ControllerApiControllerTest {
         setAuthentication(user);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20",
+                "25",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
         String requestBody = objectMapper.writeValueAsString(request);

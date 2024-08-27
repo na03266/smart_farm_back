@@ -13,16 +13,16 @@ public class ControllerDto {
     public static class AddControllerRequest {
         private String controllerId;
         private String name;
-        private Float setTempLow;
-        private Float setTempHigh;
-        private Float tempGap;
-        private Float heatTemp;
+        private String setTempLow;
+        private String setTempHigh;
+        private Integer tempGap;
+        private Integer heatTemp;
         private Integer iceType;
         private Integer alarmType;
-        private Float alarmTempHigh;
-        private Float alarmTempLow;
+        private Integer alarmTempHigh;
+        private Integer alarmTempLow;
         private String tel;
-        private Boolean awsEnabled;
+        private Integer awsEnabled;
         private Long userId;
     }
 
@@ -30,16 +30,16 @@ public class ControllerDto {
     public static class ControllerResponse {
         private final String controllerId;
         private final String name;
-        private final Float setTempLow;
-        private final Float setTempHigh;
-        private final Float tempGap;
-        private final Float heatTemp;
+        private final String setTempLow;
+        private final String setTempHigh;
+        private final Integer tempGap;
+        private final Integer heatTemp;
         private final Integer iceType;
         private final Integer alarmType;
-        private final Float alarmTempHigh;
-        private final Float alarmTempLow;
+        private final Integer alarmTempHigh;
+        private final Integer alarmTempLow;
         private final String tel;
-        private final Boolean awsEnabled;
+        private final Integer awsEnabled;
         private final Long userId;
 
         public ControllerResponse(Controller controller) {
@@ -64,16 +64,16 @@ public class ControllerDto {
     @Getter
     public static class UpdateControllerRequest {
         private String name;
-        private Float setTempLow;
-        private Float setTempHigh;
-        private Float tempGap;
-        private Float heatTemp;
+        private String setTempLow;
+        private String setTempHigh;
+        private Integer tempGap;
+        private Integer heatTemp;
         private Integer iceType;
         private Integer alarmType;
-        private Float alarmTempHigh;
-        private Float alarmTempLow;
+        private Integer alarmTempHigh;
+        private Integer alarmTempLow;
         private String tel;
-        private Boolean awsEnabled;
+        private Integer awsEnabled;
         private Long userId;
     }
 }

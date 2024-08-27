@@ -166,7 +166,7 @@ public class ControllerService {
         for (int i = 0; i < 16; i++) {
             DeviceSetupDto.AddDeviceSetupRequest deviceSetupRequest = DeviceSetupDto.AddDeviceSetupRequest.builder()
                     .unitId(i)
-                    .unitType(false)
+                    .unitType(0)
                     .unitCh(0)
                     .unitOpenCh(0)
                     .unitCloseCh(0)

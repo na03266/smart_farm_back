@@ -1,12 +1,12 @@
 package me.hwangje.smart_farm.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.hwangje.smart_farm.domain.Controller;
 import me.hwangje.smart_farm.repository.ControllerRepository;
-import me.hwangje.smart_farm.repository.DeviceSetupRepository;
-import me.hwangje.smart_farm.repository.SensorSetupRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
@@ -14,48 +14,33 @@ import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class MqttService {
 
     private final MqttPahoMessageDrivenChannelAdapter mqttInbound;
     private final MqttPahoMessageHandler mqttOutbound;
-
-    @Lazy
     private final ObjectMapper objectMapper;
-    @Lazy
     private final ControllerRepository controllerRepository;
-    @Lazy
-    private final DeviceSetupRepository deviceSetupRepository;
-    @Lazy
-    private final SensorSetupRepository sensorSetupRepository;
+    private final SetupService setupService;
 
-
-    @Autowired
-    public MqttService(MqttPahoMessageDrivenChannelAdapter mqttInbound,
-                       MqttPahoMessageHandler mqttOutbound,
-                       DeviceSetupRepository deviceSetupRepository,
-                       ControllerRepository controllerRepository,
-                       ObjectMapper objectMapper,
-                       SensorSetupRepository sensorSetupRepository
-    ) {
-        this.mqttInbound = mqttInbound;
-        this.mqttOutbound = mqttOutbound;
-        this.deviceSetupRepository = deviceSetupRepository;
-        this.controllerRepository = controllerRepository;
-        this.objectMapper = objectMapper;
-        this.sensorSetupRepository = sensorSetupRepository;
-    }
-
+    @Transactional
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public void handleMessage(Message<?> message) {
         String topic = (String) message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
         String payload = (String) message.getPayload();
 
-        System.out.println("Received message from topic '" + topic + "': " + payload);
+        log.info("Received message from topic '{}': {}", topic, payload);
 
-        assert topic != null;
+        if (topic == null) {
+            log.error("Received message with null topic");
+            return;
+        }
+
         String[] topicParts = topic.split("/");
 
         if (topicParts.length >= 2) {
@@ -65,34 +50,54 @@ public class MqttService {
             if (mainTopic.equals("SMARTFARM")) {
                 handleSmartFarmTopic(subTopic, payload);
             } else {
-                System.out.println("Unknown main topic: " + mainTopic);
+                log.warn("Unknown main topic: {}", mainTopic);
             }
         } else {
-            System.out.println("Invalid topic format: " + topic);
+            log.error("Invalid topic format: {}", topic);
         }
     }
 
     private void handleSmartFarmTopic(String subTopic, String payload) {
         switch (subTopic) {
             case "DEVICE_STATUS":
-                // 디바이스 상태 처리
+                handleDeviceStatusTopic(payload);
                 break;
             case "SENSOR_DATA":
-                // 센서 데이터 처리
+                handleSensorDataTopic(payload);
                 break;
             case "SETUP":
-                // 셋업 데이터 처리
-
+                handleSetupTopic(payload);
                 break;
             default:
                 System.out.println("Unknown SMARTFARM sub-topic: " + subTopic);
         }
     }
 
-    private void handleSetupTopic(String payload) {
-        // SETUP 관련 처리
+    // 최초 입력시 컨트롤러 없으면 생성하는걸 해야할까?
+    // 아님 그냥 생성되어있는거만 넣을수 있도록 해야할까?
+    protected void handleSetupTopic(String payload) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(payload);
+            // 디바이스 설정 정보 저장
+            JsonNode setDeviceNode = rootNode.get("setdevice");
+            // 디바이스 타이머 정보 저장
+            JsonNode deviceTimerNode = rootNode.get("UTIMER");
+            // 디바이스 설정 정보 저장
+            JsonNode setSensorNode = rootNode.get("setsensor");
+
+            // 값 전달 받을 시 한 문자열로 받도록 요청
+            Controller controller = controllerRepository.findByControllerId(rootNode.get("CID").asText())
+                    .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
+
+            setupService.handleSetup(controller, rootNode, setDeviceNode, deviceTimerNode, setSensorNode);
+            log.info("Setup completed for controller: {}", controller.getControllerId());
+
+        } catch (Exception e) {
+            log.error("Error parsing controller data", e);
+        }
 
     }
+
 
     private void handleDeviceStatusTopic(String payload) {
         // SETUP 관련 처리

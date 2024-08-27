@@ -96,16 +96,16 @@ class SensorDataApiControllerTest {
         request = new ControllerDto.AddControllerRequest(
                 "TEST_CTRL_002",
                 "테스트2번",
-                20.0f,
-                25.0f,
-                1.0f,
-                30.0f,
+                "20.0f",
+                "25.0f",
+                1,
+                30,
                 1,
                 1,
-                28.0f,
-                18.0f,
+                28,
+                18,
                 "01012345678",
-                true,
+                1,
                 user.getId()
         );
     }

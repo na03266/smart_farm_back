@@ -26,7 +26,7 @@ public class DeviceSetup {
     private Integer unitId;
 
     @Column(name = "unit_type")
-    private Boolean unitType;
+    private Integer unitType;
 
     @Column(name = "unit_ch")
     private Integer unitCh;
@@ -75,7 +75,7 @@ public class DeviceSetup {
     }
 
     @Builder
-    public DeviceSetup(Integer unitId, Boolean unitType, Integer unitCh, Integer unitOpenCh,
+    public DeviceSetup(Integer unitId, Integer unitType, Integer unitCh, Integer unitOpenCh,
                        Integer unitCloseCh, Integer unitMoveTime, Integer unitStopTime,
                        Integer unitOpenTime, Integer unitCloseTime, Integer operationType,
                        Integer timerSet, Controller controller) {
@@ -93,7 +93,7 @@ public class DeviceSetup {
         this.controller = controller;
     }
 
-    public void update(Integer unitId, Boolean hasLightShield, Integer unitCh, Integer unitOpenCh,
+    public void update(Integer unitId, Integer hasLightShield, Integer unitCh, Integer unitOpenCh,
                        Integer unitCloseCh, Integer unitMoveTime, Integer unitStopTime,
                        Integer unitOpenTime, Integer unitCloseTime, Integer operationType,
                        Integer timerSet) {

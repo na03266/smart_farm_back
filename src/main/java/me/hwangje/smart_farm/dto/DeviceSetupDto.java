@@ -14,7 +14,7 @@ public class DeviceSetupDto {
     @Builder
     public static class AddDeviceSetupRequest {
         private Integer unitId;
-        private Boolean unitType;
+        private Integer unitType;
         private Integer unitCh;
         private Integer unitOpenCh;
         private Integer unitCloseCh;
@@ -30,7 +30,7 @@ public class DeviceSetupDto {
     public static class DeviceSetupResponse {
         private final Long id;
         private final Integer unitId;
-        private final Boolean unitType;
+        private final Integer unitType;
         private final Integer unitCh;
         private final Integer unitOpenCh;
         private final Integer unitCloseCh;
@@ -62,7 +62,7 @@ public class DeviceSetupDto {
     @Getter
     public static class UpdateDeviceSetupRequest {
         private Integer unitId;
-        private Boolean unitType;
+        private Integer unitType;
         private Integer unitCh;
         private Integer unitOpenCh;
         private Integer unitCloseCh;
