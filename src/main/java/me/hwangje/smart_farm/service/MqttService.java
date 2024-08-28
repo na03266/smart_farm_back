@@ -26,7 +26,7 @@ public class MqttService {
     private final MqttPahoMessageHandler mqttOutbound;
     private final ObjectMapper objectMapper;
     private final ControllerRepository controllerRepository;
-    private final SetupService setupService;
+    private final MqttSubscribeService mqttSubscribeService;
 
     @Transactional
     @ServiceActivator(inputChannel = "mqttInputChannel")
@@ -43,9 +43,10 @@ public class MqttService {
 
         String[] topicParts = topic.split("/");
 
-        if (topicParts.length >= 2) {
+        if (topicParts.length >= 3) {
             String mainTopic = topicParts[0];
-            String subTopic = topicParts[1];
+            String sortTopic = topicParts[1];
+            String subTopic = topicParts[2];
 
             if (mainTopic.equals("SMARTFARM")) {
                 handleSmartFarmTopic(subTopic, payload);
@@ -89,7 +90,7 @@ public class MqttService {
             Controller controller = controllerRepository.findByControllerId(rootNode.get("CID").asText())
                     .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
 
-            setupService.handleSetup(controller, rootNode, setDeviceNode, deviceTimerNode, setSensorNode);
+            mqttSubscribeService.handleSetup(controller, rootNode, setDeviceNode, deviceTimerNode, setSensorNode);
             log.info("Setup completed for controller: {}", controller.getControllerId());
 
         } catch (Exception e) {
@@ -100,7 +101,20 @@ public class MqttService {
 
 
     private void handleDeviceStatusTopic(String payload) {
-        // SETUP 관련 처리
+        try {
+            JsonNode rootNode = objectMapper.readTree(payload);
+            // 디바이스 상태 정보 저장
+            JsonNode deviceNode = rootNode.get("devicestatus");
+
+            // 값 전달 받을 시 한 문자열로 받도록 요청
+            Controller controller = controllerRepository.findByControllerId(rootNode.get("CID").asText())
+                    .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
+
+            log.info("Setup completed for controller: {}", controller.getControllerId());
+
+        } catch (Exception e) {
+            log.error("Error parsing controller data", e);
+        }
     }
 
     private void handleSensorDataTopic(String payload) {

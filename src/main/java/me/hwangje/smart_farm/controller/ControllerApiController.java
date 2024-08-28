@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -10,6 +11,7 @@ import me.hwangje.smart_farm.dto.ControllerDto.AddControllerRequest;
 import me.hwangje.smart_farm.dto.ControllerDto.ControllerResponse;
 import me.hwangje.smart_farm.dto.ControllerDto.UpdateControllerRequest;
 import me.hwangje.smart_farm.service.ControllerService;
+import me.hwangje.smart_farm.service.MqttPublishService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,7 @@ import java.util.List;
 @Tag(name = "Controller", description = "컨트롤러 관련 API")
 public class ControllerApiController {
     private final ControllerService controllerService;
+    private final MqttPublishService mqttPublishService;
 
     @Operation(summary = "컨트롤러 추가", description = "새로운 컨트롤러를 생성, ADMIN 권한 필요." +
             "컨트롤러 생성 시 센서셋업 9개, 타이머 16개, 장치셋업 16개, 장치 상태 16개 가 동시에 생성됨")
@@ -45,10 +48,11 @@ public class ControllerApiController {
     }
 
     @Operation(summary = "할당된 모든 컨트롤러 조회",
-            description = "모든 컨트롤러를 조회, 권한에 따라 결과가 다름. /n" +
-                    "ADMIN: 모두 조회, /n" +
-                    "MANAGER: 같은 그룹에 소속된 모든 사용자 검색/n" +
-                    "USER: 본인 소유만 조회 가능")
+            description = """
+                    모든 컨트롤러를 조회, 권한에 따라 결과가 다름.\s
+                    ADMIN: 모두 조회,\s
+                    MANAGER: 같은 그룹에 소속된 모든 사용자 검색\s
+                    USER: 본인 소유만 조회 가능""")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "권한 없음")
@@ -85,8 +89,9 @@ public class ControllerApiController {
             @ApiResponse(responseCode = "404", description = "컨트롤러를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ControllerResponse> updateController(@PathVariable Long id, @RequestBody UpdateControllerRequest request) {
+    public ResponseEntity<ControllerResponse> updateController(@PathVariable Long id, @RequestBody UpdateControllerRequest request) throws JsonProcessingException {
         Controller updatedController = controllerService.update(id, request);
+        mqttPublishService.publishSetup(id);
         return ResponseEntity.ok().body(new ControllerResponse(updatedController));
     }
 

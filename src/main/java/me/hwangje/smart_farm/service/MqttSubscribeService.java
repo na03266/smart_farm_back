@@ -6,7 +6,6 @@ import me.hwangje.smart_farm.domain.Controller;
 import me.hwangje.smart_farm.domain.DeviceSetup;
 import me.hwangje.smart_farm.domain.DeviceTimer;
 import me.hwangje.smart_farm.domain.SensorSetup;
-import me.hwangje.smart_farm.repository.ControllerRepository;
 import me.hwangje.smart_farm.repository.DeviceSetupRepository;
 import me.hwangje.smart_farm.repository.DeviceTimerRepository;
 import me.hwangje.smart_farm.repository.SensorSetupRepository;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SetupService {
+public class MqttSubscribeService {
     @Lazy
     private final DeviceSetupRepository deviceSetupRepository;
     @Lazy

@@ -134,6 +134,7 @@ public class ControllerService {
                     request.getAwsEnabled() != null ? request.getAwsEnabled() : controller.getAwsEnabled(),
                     request.getUserId() != null ? userRepository.findById(request.getUserId()).orElse(controller.getUser()) : controller.getUser()
             );
+
             return controller;
         }
         throw new IllegalArgumentException("You don't have permission to update this controller.");
