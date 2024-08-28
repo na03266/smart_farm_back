@@ -71,8 +71,8 @@ class UserApiControllerTest {
 
         Group newGroup = groupRepository.save(Group.builder()
                 .name("New Group")
-                .contact("01099999999")
-                .registrationNumber("9876543210")
+                .contact("[0,1,0,9,9,9,9,9,9,9,9]")
+                .registrationNumber("[9,8,7,6,5,4,3,2,1,0]")
                 .build());
         admin = createUser("admin@gmail.com", null, Role.ADMIN);
         manager = createUser("manager@gmail.com", newGroup, Role.MANAGER);
@@ -86,7 +86,7 @@ class UserApiControllerTest {
                 .role(role)
                 .name(role.name())
                 .group(group)
-                .contact("01012345678")
+                .contact("[0,1,0,1,2,3,4,5,6,7,8]")
                 .build());
     }
 
@@ -103,7 +103,7 @@ class UserApiControllerTest {
                 .email("example@email.com")
                 .password("password123")
                 .name("John Doe")
-                .contact("01012345678")
+                .contact("[0,1,0,1,2,3,4,5,6,7,8]")
                 .manager("Manager Name")
                 .role(Role.USER)
                 .build();
@@ -159,7 +159,7 @@ class UserApiControllerTest {
         setAuthentication(user);
 
 
-        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "두통", user.getGroup().getId(), Role.USER);
+        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "[0,1,0,8,8,8,8,8,8,8,8]", "두통", user.getGroup().getId(), Role.USER);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -186,7 +186,7 @@ class UserApiControllerTest {
                 .registrationNumber("9876543210")
                 .build());
 
-        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup.getId(), Role.USER);
+        UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "[0,1,0,8,8,8,8,8,8,8,8]", "", newGroup.getId(), Role.USER);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -211,8 +211,8 @@ class UserApiControllerTest {
         setAuthentication(manager);
         Group newGroup = groupRepository.save(Group.builder()
                 .name("New Group")
-                .contact("01099999999")
-                .registrationNumber("9876543210")
+                .contact("[0,1,0,9,9,9,9,9,9,9,9]")
+                .registrationNumber("[9,8,7,6,5,4,3,2,1,0]")
                 .build());
 
         UpdateUserRequest request = new UpdateUserRequest("newpassword", "Updated Name", "01088888888", "", newGroup.getId(), Role.USER);

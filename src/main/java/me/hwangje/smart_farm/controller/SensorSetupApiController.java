@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.SensorSetup;
 import me.hwangje.smart_farm.dto.SensorSetupDto.SensorSetupResponse;
 import me.hwangje.smart_farm.dto.SensorSetupDto.UpdateSensorSetupRequest;
+import me.hwangje.smart_farm.service.MqttPublishService;
 import me.hwangje.smart_farm.service.SensorSetupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @Tag(name = "SensorSetup", description = "센서 셋업 관련 API")
 public class SensorSetupApiController {
     private final SensorSetupService sensorSetupService;
+    private final MqttPublishService mqttPublishService;
 
     @Operation(summary = "모든 센서 셋업 조회", description = "모든 센서 셋업를 조회합니다.")
     @ApiResponses(value = {
@@ -41,8 +44,10 @@ public class SensorSetupApiController {
             @ApiResponse(responseCode = "404", description = "센서 셋업을 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<SensorSetupResponse> updateSensorSetup(@PathVariable Long id, @RequestBody UpdateSensorSetupRequest request) {
+    public ResponseEntity<SensorSetupResponse> updateSensorSetup(@PathVariable Long id, @RequestBody UpdateSensorSetupRequest request) throws JsonProcessingException {
         SensorSetup updatedSensorSetup = sensorSetupService.update(id, request);
+        mqttPublishService.publishSetup(updatedSensorSetup.getControllerId());
+
         return ResponseEntity.ok().body(new SensorSetupResponse(updatedSensorSetup));
     }
 }

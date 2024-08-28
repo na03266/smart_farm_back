@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -9,6 +10,7 @@ import me.hwangje.smart_farm.domain.DeviceTimer;
 import me.hwangje.smart_farm.dto.DeviceTimerDto.DeviceTimerResponse;
 import me.hwangje.smart_farm.dto.DeviceTimerDto.UpdateDeviceTimerRequest;
 import me.hwangje.smart_farm.service.DeviceTimerService;
+import me.hwangje.smart_farm.service.MqttPublishService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/device-timers")
 @Tag(name = "DeviceTimer", description = "디바이스 타이머 관련 API")
 public class DeviceTimerApiController {
-
     private final DeviceTimerService deviceTimerService;
+    private final MqttPublishService mqttPublishService;
 
     @Operation(summary = "모든 디바이스 타이머 조회", description = "모든 디바이스 타이머를 조회합니다.")
     @ApiResponses(value = {
@@ -42,8 +44,10 @@ public class DeviceTimerApiController {
             @ApiResponse(responseCode = "404", description = "디바이스 타이머를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceTimerResponse> updateDeviceTimer(@PathVariable Long id, @RequestBody UpdateDeviceTimerRequest request) {
+    public ResponseEntity<DeviceTimerResponse> updateDeviceTimer(@PathVariable Long id, @RequestBody UpdateDeviceTimerRequest request) throws JsonProcessingException {
         DeviceTimer updatedDeviceTimer = deviceTimerService.update(id, request);
+        mqttPublishService.publishSetup(updatedDeviceTimer.getControllerId());
+
         return ResponseEntity.ok().body(new DeviceTimerResponse(updatedDeviceTimer));
     }
 }

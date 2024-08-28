@@ -88,25 +88,25 @@ class SensorSetupApiControllerTest {
 
         testGroup = groupRepository.save(Group.builder()
                 .name("Test Group")
-                .contact("01099999999")
-                .registrationNumber("1234567890")
+                .contact("[0,1,0,9,9,9,9,9,9,9,9]")
+                .registrationNumber("[1,2,3,4,5,6,7,8,9,0]")
                 .build());
 
         admin = createUser("admin@test.com", null, Role.ADMIN);
         user = createUser("user@test.com", testGroup, Role.USER);
 
         request = new ControllerDto.AddControllerRequest(
-                "TEST_CTRL_002",
+                "[0,16,1,5,2,3]",
                 "테스트2번",
-                "20.0f",
-                "25.0f",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );
@@ -119,7 +119,7 @@ class SensorSetupApiControllerTest {
                 .role(role)
                 .name(role.name())
                 .group(group)
-                .contact("01012345678")
+                .contact("[0,1,0,1,2,3,4,5,6,7,8]")
                 .build());
     }
 
@@ -185,7 +185,7 @@ class SensorSetupApiControllerTest {
                 testSensorSetup.getSensorReserved(),
                 testSensorSetup.getSensorMult(),
                 testSensorSetup.getSensorOffset(),
-                "희희"
+                "[0,0,0]"
         );
         String requestBody = objectMapper.writeValueAsString(updateRequest);
 
@@ -196,7 +196,7 @@ class SensorSetupApiControllerTest {
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.sensorFormula", is("희희")));
+                .andExpect(jsonPath("$.sensorFormula", is("[0,0,0]")));
     }
 
     @DisplayName("컨트롤러 삭제 시 관련 센서 셋업이 함께 삭제된다")

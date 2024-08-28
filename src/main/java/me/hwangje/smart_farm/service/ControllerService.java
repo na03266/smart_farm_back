@@ -134,7 +134,6 @@ public class ControllerService {
                     request.getAwsEnabled() != null ? request.getAwsEnabled() : controller.getAwsEnabled(),
                     request.getUserId() != null ? userRepository.findById(request.getUserId()).orElse(controller.getUser()) : controller.getUser()
             );
-
             return controller;
         }
         throw new IllegalArgumentException("You don't have permission to update this controller.");
@@ -185,7 +184,7 @@ public class ControllerService {
 
     @Transactional
     public void createDefaultDeviceTimers(Controller controller) {
-        String defaultTimer = String.join("", Collections.nCopies(1440, "0"));
+        String defaultTimer = "[" + String.join(",", Collections.nCopies(180, "0")) + "]";
 
         for (int i = 0; i < 16; i++) {
             DeviceTimerDto.AddDeviceTimerRequest deviceTimerRequest = DeviceTimerDto.AddDeviceTimerRequest.builder()
@@ -200,6 +199,8 @@ public class ControllerService {
 
     @Transactional
     public void createDefaultSensorSetup(Controller controller) {
+        String defaultFormula = "[" + String.join(",", Collections.nCopies(256, "0")) + "]";
+
         for (int i = 0; i < 9; i++) {
             SensorSetupDto.AddSensorSetupRequest sensorSetupRequest = SensorSetupDto.AddSensorSetupRequest.builder()
                     .sensorId(i)
@@ -207,7 +208,7 @@ public class ControllerService {
                     .sensorReserved(0)
                     .sensorMult(0.0F)
                     .sensorOffset(0.0F)
-                    .sensorFormula("")
+                    .sensorFormula(defaultFormula)
                     .build();
             sensorSetupService.save(sensorSetupRequest, controller);
         }

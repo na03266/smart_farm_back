@@ -78,7 +78,7 @@ class ControllerApiControllerTest {
         testGroup = groupRepository.save(Group.builder()
                 .name("Test Group")
                 .contact("01099999999")
-                .registrationNumber("1234567890")
+                .registrationNumber("[1,2,3,4,5,6,7,8,9,0]")
                 .build());
 
         admin = createUser("admin@test.com", null, Role.ADMIN);
@@ -86,17 +86,17 @@ class ControllerApiControllerTest {
         user = createUser("user@test.com", testGroup, Role.USER);
 
         testController = controllerRepository.save(Controller.builder()
-                .controllerId("TEST_CTRL_001")
+                .controllerId("[0,16,1,5,2,4]")
                 .name("테스트컨트롤러")
-                .setTempLow("20")
-                .setTempHigh("25")
+                .setTempLow("[20]")
+                .setTempHigh("[25]")
                 .tempGap(1)
                 .heatTemp(30)
                 .iceType(1)
                 .alarmType(1)
                 .alarmTempHigh(28)
                 .alarmTempLow(18)
-                .tel("01012345678")
+                .tel("[0,1,0,1,2,3,4,5,6,7,8]")
                 .awsEnabled(1)
                 .user(user)
                 .build());
@@ -109,7 +109,7 @@ class ControllerApiControllerTest {
                 .role(role)
                 .name(role.name())
                 .group(group)
-                .contact("01012345678")
+                .contact("[0,1,0,1,2,3,4,5,6,7,8]")
                 .build());
     }
 
@@ -124,17 +124,17 @@ class ControllerApiControllerTest {
         // Given
         setAuthentication(admin);
         AddControllerRequest request = new AddControllerRequest(
-                "TEST_CTRL_002",
+                "[0,16,1,5,2,3]",
                 "테스트2번",
-                "20",
-                "25",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );
@@ -147,9 +147,9 @@ class ControllerApiControllerTest {
 
         // Then
         result.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.controllerId", is("TEST_CTRL_002")));
+                .andExpect(jsonPath("$.controllerId", is("[0,16,1,5,2,3]")));
 
-        assertThat(controllerRepository.findByControllerId("TEST_CTRL_002")).isPresent();
+        assertThat(controllerRepository.findByControllerId("[0,16,1,5,2,3]")).isPresent();
     }
 
     @DisplayName("ADMIN, MANAGER 가 아닌 사용자가 컨트롤러를 추가하려고 하면 실패한다")
@@ -158,17 +158,17 @@ class ControllerApiControllerTest {
         // Given
         setAuthentication(user);
         AddControllerRequest request = new AddControllerRequest(
-                "TEST_CTRL_002",
+                "[0,16,1,5,2,3]",
                 "테스트2번",
-                "20",
-                "25",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );
@@ -219,15 +219,15 @@ class ControllerApiControllerTest {
         setAuthentication(admin);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                "20",
-                "25",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );
@@ -253,15 +253,15 @@ class ControllerApiControllerTest {
         setAuthentication(manager);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                "20",
-                "25",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );
@@ -287,15 +287,15 @@ class ControllerApiControllerTest {
         setAuthentication(user);
         UpdateControllerRequest request = new UpdateControllerRequest(
                 "테스트2번",
-                "20",
-                "25",
+                "[20]",
+                "[25]",
                 1,
                 30,
                 1,
                 1,
                 28,
                 18,
-                "01012345678",
+                "[0,1,0,1,2,3,4,5,6,7,8]",
                 1,
                 user.getId()
         );

@@ -76,7 +76,7 @@ class GroupApiControllerTest {
                 .password("test")
                 .role(role)
                 .name(role.name())
-                .contact("01012345678")
+                .contact("[0,1,0,1,2,3,4,5,6,7,8]")
                 .build());
     }
 
@@ -90,7 +90,7 @@ class GroupApiControllerTest {
     void 그룹추가_관리자() throws Exception {
         // Given
         setAuthentication(admin);
-        AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
+        AddGroupRequest request = new AddGroupRequest("New Group", "[0,1,0,2,2,2,2,2,2,2,2]", "[9,8,7,6,5,4,3,2,1,0]");
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -112,7 +112,7 @@ class GroupApiControllerTest {
     void 그룹추가_매니저() throws Exception {
         // Given
         setAuthentication(user);
-        AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
+        AddGroupRequest request = new AddGroupRequest("New Group", "[0,1,0,2,2,2,2,2,2,2,2]", "[9,8,7,6,5,4,3,2,1,0]");
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -132,7 +132,7 @@ class GroupApiControllerTest {
     void 그룹추가_사용자() throws Exception {
         // Given
         setAuthentication(manager);
-        AddGroupRequest request = new AddGroupRequest("New Group", "01022222222", "9876543210");
+        AddGroupRequest request = new AddGroupRequest("New Group", "[0,1,0,2,2,2,2,2,2,2,2]", "[9,8,7,6,5,4,3,2,1,0]");
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -199,7 +199,7 @@ class GroupApiControllerTest {
         // Given
         Group group = createDefaultGroup();
         setAuthentication(manager);
-        UpdateGroupRequest request = new UpdateGroupRequest("Updated Group", "01033333333", "1122334455");
+        UpdateGroupRequest request = new UpdateGroupRequest("Updated Group", "[0,1,0,3,3,3,3,3,3,3,3]", "[1,1,2,2,3,3,4,4,5,5]");
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When
@@ -236,8 +236,8 @@ class GroupApiControllerTest {
     public Group createDefaultGroup() {
         return groupRepository.save(Group.builder()
                 .name("Default Group")
-                .contact("01011111111")
-                .registrationNumber("0123456789")
+                .contact("[0,1,0,1,1,1,1,1,1,1,1]")
+                .registrationNumber("[0,1,2,3,4,5,6,7,8,9]")
                 .build());
     }
 }

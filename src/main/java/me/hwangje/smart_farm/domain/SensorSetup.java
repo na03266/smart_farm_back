@@ -39,6 +39,7 @@ public class SensorSetup {
     @Column(name = "sensor_offset")
     private Float sensorOffset;
 
+    @Lob
     @Column(name = "conversion_formula")
     private String sensorFormula;
 

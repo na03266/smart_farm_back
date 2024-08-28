@@ -40,26 +40,26 @@ public class MqttPublishService {
         JsonNode setupNode = convertSetupRequestToJsonNode(id);
         String payload = objectMapper.writeValueAsString(setupNode);
 
-        mqttService.publishMessage(controller.getControllerId() + "/SETUP", payload);
+        mqttService.publishMessage("SMARTFARM/" + controller.getControllerId() + "/SETUP", payload);
     }
 
-    private JsonNode convertSetupRequestToJsonNode(Long id) {
+    private JsonNode convertSetupRequestToJsonNode(Long id) throws JsonProcessingException {
         // 컨트롤러 아이디만 가져다가 기본 세팅하고 하위 노드들은 여기에서 전부 처리해야함.
         //그럼 이 함수는 최종으로 만드는 것이니 일단 id만 받아서 컨트롤러 검색하고 dto제작이 아니라
         // dto를 맵핑만 해야함.
         UpdateSetupRequest setupRequest = mergedUpdateSetupDto(id);
 
         ObjectNode rootNode = objectMapper.createObjectNode();
-        rootNode.put("CID", setupRequest.getControllerId());
-        rootNode.put("settempL", setupRequest.getSettempL());
-        rootNode.put("settempH", setupRequest.getSettempH());
+        rootNode.set("CID", objectMapper.readTree(setupRequest.getControllerId()));
+        rootNode.set("settempL", objectMapper.readTree(setupRequest.getSettempL()));
+        rootNode.set("settempH", objectMapper.readTree(setupRequest.getSettempH()));
         rootNode.put("TEMPGAP", setupRequest.getTEMPGAP());
         rootNode.put("HEATTEMP", setupRequest.getHEATTEMP());
         rootNode.put("ICETYPE", setupRequest.getICETYPE());
         rootNode.put("ALARMTYPE", setupRequest.getALARMTYPE());
         rootNode.put("ALARMTEMPH", setupRequest.getALARMTEMPH());
         rootNode.put("ALARMTEMPL", setupRequest.getALARMTEMPL());
-        rootNode.put("TEL", setupRequest.getTEL());
+        rootNode.set("TEL", objectMapper.readTree(setupRequest.getTEL()));
         rootNode.put("AWSBIT", setupRequest.getAWSBIT());
 
         rootNode.set("setdevice", convertDeviceSetup(setupRequest.getSetDevice()));
@@ -92,7 +92,7 @@ public class MqttPublishService {
         return deviceArray;
     }
 
-    private ArrayNode convertSensorSetup(List<UpdateSetupSensor> sensors) {
+    private ArrayNode convertSensorSetup(List<UpdateSetupSensor> sensors) throws JsonProcessingException {
         ArrayNode sensorArray = objectMapper.createArrayNode();
 
         for (UpdateSetupSensor sensor : sensors) {
@@ -103,12 +103,13 @@ public class MqttPublishService {
             sensorNode.put("SRESERVED", sensor.getSRESERVED());
             sensorNode.put("SMULT", sensor.getSMULT());
             sensorNode.put("SOFFSET", sensor.getSOFFSET());
-            sensorNode.put("SEQ", sensor.getSEQ());
+            sensorNode.set("SEQ", objectMapper.readTree(sensor.getSEQ()));
 
             sensorArray.add(sensorNode);
         }
         return sensorArray;
     }
+
     private ArrayNode convertDeviceTimerSetup(List<String> timers) {
         ArrayNode timerArray = objectMapper.createArrayNode();
 

@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -9,6 +10,7 @@ import me.hwangje.smart_farm.domain.DeviceSetup;
 import me.hwangje.smart_farm.dto.DeviceSetupDto.DeviceSetupResponse;
 import me.hwangje.smart_farm.dto.DeviceSetupDto.UpdateDeviceSetupRequest;
 import me.hwangje.smart_farm.service.DeviceSetupService;
+import me.hwangje.smart_farm.service.MqttPublishService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/device-setups")
 @Tag(name = "DeviceSetup", description = "디바이스 셋업 관련 API")
 public class DeviceSetupApiController {
-
     private final DeviceSetupService deviceSetupService;
+    private final MqttPublishService mqttPublishService;
 
     @Operation(summary = "모든 디바이스 셋업 조회", description = "모든 디바이스 셋업을 조회합니다.")
     @ApiResponses(value = {
@@ -42,8 +44,9 @@ public class DeviceSetupApiController {
             @ApiResponse(responseCode = "404", description = "디바이스 셋업 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceSetupResponse> updateDeviceTimer(@PathVariable Long id, @RequestBody UpdateDeviceSetupRequest request) {
+    public ResponseEntity<DeviceSetupResponse> updateDeviceTimer(@PathVariable Long id, @RequestBody UpdateDeviceSetupRequest request) throws JsonProcessingException {
         DeviceSetup updatedDeviceSetup = deviceSetupService.update(id, request);
+        mqttPublishService.publishSetup(updatedDeviceSetup.getControllerId());
         return ResponseEntity.ok().body(new DeviceSetupResponse(updatedDeviceSetup));
     }
 }

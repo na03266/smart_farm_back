@@ -45,7 +45,6 @@ public class MqttService {
 
         if (topicParts.length >= 3) {
             String mainTopic = topicParts[0];
-            String sortTopic = topicParts[1];
             String subTopic = topicParts[2];
 
             if (mainTopic.equals("SMARTFARM")) {

@@ -89,9 +89,10 @@ public class ControllerApiController {
             @ApiResponse(responseCode = "404", description = "컨트롤러를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ControllerResponse> updateController(@PathVariable Long id, @RequestBody UpdateControllerRequest request) throws JsonProcessingException {
+    public ResponseEntity<ControllerResponse> updateController(@PathVariable Long id, @RequestBody UpdateControllerRequest request) throws Exception {
         Controller updatedController = controllerService.update(id, request);
         mqttPublishService.publishSetup(id);
+
         return ResponseEntity.ok().body(new ControllerResponse(updatedController));
     }
 
