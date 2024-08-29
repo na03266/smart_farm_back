@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -9,6 +10,7 @@ import me.hwangje.smart_farm.domain.DeviceStatus;
 import me.hwangje.smart_farm.dto.DeviceStatusDto.DeviceStatusResponse;
 import me.hwangje.smart_farm.dto.DeviceStatusDto.UpdateDeviceStatusRequest;
 import me.hwangje.smart_farm.service.DeviceStatusService;
+import me.hwangje.smart_farm.service.MqttPublishService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class DeviceStatusApiController {
 
     private final DeviceStatusService deviceStatusService;
+    private final MqttPublishService mqttPublishService;
 
     @Operation(summary = "모든 디바이스 상태 조회", description = "특정 컨트롤러의 모든 디바이스 상태를 조회합니다.")
     @ApiResponses(value = {
@@ -42,8 +45,9 @@ public class DeviceStatusApiController {
             @ApiResponse(responseCode = "404", description = "디바이스 상태 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceStatusResponse> updateDeviceStatus(@PathVariable Long id, @RequestBody UpdateDeviceStatusRequest request) {
+    public ResponseEntity<DeviceStatusResponse> updateDeviceStatus(@PathVariable Long id, @RequestBody UpdateDeviceStatusRequest request) throws JsonProcessingException {
         DeviceStatus updatedDeviceStatus = deviceStatusService.update(id, request);
+        mqttPublishService.publishDeviceStatus(updatedDeviceStatus.getController().getId());
         return ResponseEntity.ok().body(new DeviceStatusResponse(updatedDeviceStatus));
     }
 

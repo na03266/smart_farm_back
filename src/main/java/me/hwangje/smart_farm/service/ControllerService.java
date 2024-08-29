@@ -1,5 +1,6 @@
 package me.hwangje.smart_farm.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import me.hwangje.smart_farm.domain.Controller;
 import me.hwangje.smart_farm.domain.Role;
@@ -34,6 +35,7 @@ public class ControllerService {
     private final SensorSetupService sensorSetupService;
     @Lazy
     private final DeviceStatusService deviceStatusService;
+
 
     // Create
     @Transactional
@@ -109,7 +111,7 @@ public class ControllerService {
 
     // Update
     @Transactional
-    public Controller update(Long id, UpdateControllerRequest request) {
+    public Controller update(Long id, UpdateControllerRequest request) throws JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -220,7 +222,7 @@ public class ControllerService {
             DeviceStatusDto.AddDeviceStatusRequest deviceStatusRequest = DeviceStatusDto.AddDeviceStatusRequest.builder()
                     .unitId(i)
                     .status(0)
-                    .isAutoMode(false)
+                    .isAutoMode(0)
                     .build();
 
             deviceStatusService.save(deviceStatusRequest, controller);

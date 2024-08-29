@@ -1,15 +1,10 @@
 package me.hwangje.smart_farm.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
-import me.hwangje.smart_farm.domain.Controller;
-import me.hwangje.smart_farm.domain.DeviceSetup;
-import me.hwangje.smart_farm.domain.DeviceTimer;
-import me.hwangje.smart_farm.domain.SensorSetup;
-import me.hwangje.smart_farm.repository.DeviceSetupRepository;
-import me.hwangje.smart_farm.repository.DeviceTimerRepository;
-import me.hwangje.smart_farm.repository.SensorSetupRepository;
-import org.springframework.context.annotation.Lazy;
+import me.hwangje.smart_farm.domain.*;
+import me.hwangje.smart_farm.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +14,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MqttSubscribeService {
-    @Lazy
     private final DeviceSetupRepository deviceSetupRepository;
-    @Lazy
     private final SensorSetupRepository sensorSetupRepository;
-    @Lazy
     private final DeviceTimerRepository deviceTimerRepository;
+    private final DeviceStatusRepository deviceStatusRepository;
+    private final SensorDataRepository sensorDataRepository;
+
     @Transactional
     public void handleSetup(Controller controller, JsonNode rootNode, JsonNode setDeviceNode, JsonNode deviceTimerNode, JsonNode setSensorNode) {
         updateController(controller, rootNode);
@@ -111,6 +106,33 @@ public class MqttSubscribeService {
                     sensorNode.get("SEQ").toString()
             );
         }
+    }
 
+    @Transactional
+    public void handleDeviceStatus (Controller controller, JsonNode statusNodes){
+        for (int i = 0; i < statusNodes.size(); i++){
+            JsonNode statusNode = statusNodes.get(i);
+            DeviceStatus deviceStatus = deviceStatusRepository.findByUnitIdAndControllerId(i, controller.getControllerId())
+                    .orElseThrow(()-> new IllegalArgumentException(" Controller & Sensor not found"));
+            deviceStatus.update(
+                    statusNode.get("UID").intValue(),
+                    statusNode.get("UMODE").intValue(),
+                    statusNode.get("USTATUS").intValue()
+            );
+        }
+    }
+    @Transactional
+    public void handleSensorData (Controller controller, JsonNode dataNodes){
+        for (int i = 0; i < dataNodes.size(); i++){
+            JsonNode dataNode = dataNodes.get(i);
+
+            SensorData sensorData = SensorData.builder()
+                    .sensorId(dataNode.get("SID").intValue())
+                    .sensorValue(dataNode.get("value").floatValue())
+                    .controller(controller)
+                    .build();
+
+            sensorDataRepository.save(sensorData);
+        }
     }
 }

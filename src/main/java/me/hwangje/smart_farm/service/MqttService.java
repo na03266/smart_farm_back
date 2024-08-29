@@ -103,12 +103,13 @@ public class MqttService {
         try {
             JsonNode rootNode = objectMapper.readTree(payload);
             // 디바이스 상태 정보 저장
-            JsonNode deviceNode = rootNode.get("devicestatus");
+            JsonNode statusNode = rootNode.get("deviceValue");
 
             // 값 전달 받을 시 한 문자열로 받도록 요청
             Controller controller = controllerRepository.findByControllerId(rootNode.get("CID").asText())
                     .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
 
+            mqttSubscribeService.handleDeviceStatus(controller, statusNode);
             log.info("Setup completed for controller: {}", controller.getControllerId());
 
         } catch (Exception e) {
@@ -117,7 +118,21 @@ public class MqttService {
     }
 
     private void handleSensorDataTopic(String payload) {
-        // SETUP 관련 처리
+        try {
+            JsonNode rootNode = objectMapper.readTree(payload);
+            // 디바이스 상태 정보 저장
+            JsonNode datasNode = rootNode.get("sensorValue");
+
+            // 값 전달 받을 시 한 문자열로 받도록 요청
+            Controller controller = controllerRepository.findByControllerId(rootNode.get("CID").asText())
+                    .orElseThrow(() -> new IllegalArgumentException("Controller not found"));
+
+            mqttSubscribeService.handleSensorData(controller, datasNode);
+            log.info("Setup completed for controller: {}", controller.getControllerId());
+
+        } catch (Exception e) {
+            log.error("Error parsing controller data", e);
+        }
     }
 
     public void publishMessage(String topic, String payload) {

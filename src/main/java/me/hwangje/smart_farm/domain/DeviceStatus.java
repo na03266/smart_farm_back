@@ -26,7 +26,7 @@ public class DeviceStatus {
     private Integer unitId;
 
     @Column(name = "is_auto_mode")
-    private Boolean isAutoMode;
+    private Integer isAutoMode;
 
     @Column(name = "status")
     private Integer status;
@@ -51,14 +51,14 @@ public class DeviceStatus {
     }
 
     @Builder
-    public DeviceStatus(Integer unitId, Boolean isAutoMode, Integer status, Controller controller) {
+    public DeviceStatus(Integer unitId, Integer isAutoMode, Integer status, Controller controller) {
         this.unitId = unitId;
         this.isAutoMode = isAutoMode;
         this.status = status;
         this.controller = controller;
     }
 
-    public void update(Integer unitId, Boolean isAutoMode, Integer status) {
+    public void update(Integer unitId, Integer isAutoMode, Integer status) {
         this.unitId = unitId;
         this.isAutoMode = isAutoMode;
         this.status = status;

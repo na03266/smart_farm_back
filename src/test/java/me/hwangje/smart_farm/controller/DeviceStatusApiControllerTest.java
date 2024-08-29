@@ -172,7 +172,7 @@ class DeviceStatusApiControllerTest {
 
         UpdateDeviceStatusRequest updateRequest = new UpdateDeviceStatusRequest(
                 testDeviceStatus.getUnitId(),
-                true,
+                1,
                 1
         );
         String requestBody = objectMapper.writeValueAsString(updateRequest);

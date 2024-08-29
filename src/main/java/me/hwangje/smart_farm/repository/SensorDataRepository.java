@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
     List<SensorData> findAllByController_Id(Long controllerId);
@@ -59,4 +60,6 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
 
 
     void deleteAllByController(Controller controller);
+
+    Optional<SensorData> findBySensorIdAndControllerId(int i, String controllerId);
 }

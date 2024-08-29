@@ -14,7 +14,7 @@ public class DeviceStatusDto {
     @Builder
     public static class AddDeviceStatusRequest {
         private Integer unitId;
-        private Boolean isAutoMode;
+        private Integer isAutoMode;
         private Integer status;
     }
 
@@ -22,7 +22,7 @@ public class DeviceStatusDto {
     public static class DeviceStatusResponse {
         private final Long id;
         private final Integer unitId;
-        private final Boolean isAutoMode;
+        private final Integer isAutoMode;
         private final Integer status;
         private final String controllerId;
 
@@ -40,7 +40,7 @@ public class DeviceStatusDto {
     @Getter
     public static class UpdateDeviceStatusRequest {
         private Integer unitId;
-        private Boolean isAutoMode;
+        private Integer isAutoMode;
         private Integer status;
     }
 }

@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
-import me.hwangje.smart_farm.domain.Controller;
-import me.hwangje.smart_farm.domain.DeviceSetup;
-import me.hwangje.smart_farm.domain.DeviceTimer;
-import me.hwangje.smart_farm.domain.SensorSetup;
+import me.hwangje.smart_farm.domain.*;
 import me.hwangje.smart_farm.dto.MqttDto.*;
+import me.hwangje.smart_farm.repository.DeviceStatusRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class MqttPublishService {
     private final DeviceSetupService deviceSetupService;
     private final SensorSetupService sensorSetupService;
     private final DeviceTimerService deviceTimerService;
+    private final DeviceStatusRepository deviceStatusRepository;
 
 
     public void publishSetup(Long id) throws JsonProcessingException {
@@ -192,5 +192,61 @@ public class MqttPublishService {
         }
 
         return updateSetupDevicesTimers;
+    }
+    public void publishDeviceStatus(Long id) throws JsonProcessingException {
+        // 발행만 한다. 하면 JsonNode만 있으면 됨. 그럼 이걸 함수에서 만들어야함.
+        Controller controller = controllerService.findById(id);
+        JsonNode statusNode = convertDeviceStatusRequestToJsonNode(id);
+        String payload = objectMapper.writeValueAsString(statusNode);
+
+        mqttService.publishMessage("SMARTFARM/" + controller.getControllerId() + "/DEVICE_STATUS", payload);
+    }
+
+    private JsonNode convertDeviceStatusRequestToJsonNode(Long id) throws JsonProcessingException {
+
+        UpdateDeviceStatusDataRequest deviceStatusDataRequest = mergedUpdateDeviceStatusDto(id);
+
+        ObjectNode rootNode = objectMapper.createObjectNode();
+        rootNode.set("CID", objectMapper.readTree(deviceStatusDataRequest.getCID()));
+        rootNode.set("deviceValue", convertDeviceStatus(deviceStatusDataRequest.getDeviceStatus()));
+
+        return rootNode;
+    }
+    private UpdateDeviceStatusDataRequest mergedUpdateDeviceStatusDto(Long id) {
+        Controller controller = controllerService.findById(id);
+
+        return UpdateDeviceStatusDataRequest.builder()
+                .CID(controller.getControllerId())
+                .deviceStatus(createUpdateDeviceStatusValues(id))
+                .build();
+    }
+    private ArrayNode convertDeviceStatus(List<UpdateDeviceStatusData> statuses) throws JsonProcessingException {
+        ArrayNode deviceStatusArray = objectMapper.createArrayNode();
+
+        for (UpdateDeviceStatusData status : statuses) {
+            ObjectNode statusNode = objectMapper.createObjectNode();
+
+            statusNode.put("UID", status.getUID());
+            statusNode.put("UMODE", status.getUMODE());
+            statusNode.put("USTATUS", status.getUSTATUS());
+
+            deviceStatusArray.add(statusNode);
+        }
+
+        return deviceStatusArray;
+    }
+    private List<UpdateDeviceStatusData> createUpdateDeviceStatusValues(Long id) {
+        List<DeviceStatus> deviceStatuses = deviceStatusRepository.findAllByController_Id(id);
+        List<UpdateDeviceStatusData> updateDeviceStatusValues = new ArrayList<>();
+
+        for (DeviceStatus status : deviceStatuses) {
+            UpdateDeviceStatusData updateDeviceStatusData = UpdateDeviceStatusData.builder()
+                    .UID(status.getUnitId())
+                    .UMODE(status.getIsAutoMode())
+                    .USTATUS(status.getStatus())
+                    .build();
+            updateDeviceStatusValues.add(updateDeviceStatusData);
+        }
+        return updateDeviceStatusValues;
     }
 }

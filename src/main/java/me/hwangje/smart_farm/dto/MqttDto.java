@@ -64,13 +64,21 @@ public class MqttDto {
         private int UTIMERSET;
     }
 
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    @Getter
-//    public static class UpdateDeviceStatusRequest {
-//        /*
-//         * CID, List<DeviceStatus>
-//         */
-//    }
-
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class UpdateDeviceStatusDataRequest {
+        private String CID;
+        private List<UpdateDeviceStatusData> deviceStatus;
+    }
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class UpdateDeviceStatusData {
+        private int UID;
+        private int UMODE;
+        private int USTATUS;
+    }
 }
