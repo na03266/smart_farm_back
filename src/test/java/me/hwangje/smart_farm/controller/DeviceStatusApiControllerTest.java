@@ -184,7 +184,7 @@ class DeviceStatusApiControllerTest {
 
         // Then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isAutoMode", is(true)))
+                .andExpect(jsonPath("$.isAutoMode", is(1)))
                 .andExpect(jsonPath("$.status", is(1)));
     }
 

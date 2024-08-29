@@ -61,5 +61,4 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
 
     void deleteAllByController(Controller controller);
 
-    Optional<SensorData> findBySensorIdAndControllerId(int i, String controllerId);
 }

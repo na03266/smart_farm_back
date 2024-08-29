@@ -112,7 +112,7 @@ public class MqttSubscribeService {
     public void handleDeviceStatus (Controller controller, JsonNode statusNodes){
         for (int i = 0; i < statusNodes.size(); i++){
             JsonNode statusNode = statusNodes.get(i);
-            DeviceStatus deviceStatus = deviceStatusRepository.findByUnitIdAndControllerId(i, controller.getControllerId())
+            DeviceStatus deviceStatus = deviceStatusRepository.findByUnitIdAndController(i, controller)
                     .orElseThrow(()-> new IllegalArgumentException(" Controller & Sensor not found"));
             deviceStatus.update(
                     statusNode.get("UID").intValue(),

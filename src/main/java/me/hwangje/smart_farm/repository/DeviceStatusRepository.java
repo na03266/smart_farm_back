@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface DeviceStatusRepository extends JpaRepository<DeviceStatus, Long> {
     List<DeviceStatus> findAllByController_Id(Long controllerId);
-    Optional<DeviceStatus> findByUnitIdAndControllerId(Integer unitId, String controllerId);
+    Optional<DeviceStatus> findByUnitIdAndController(Integer unitId, Controller controller);
 
     void deleteAllByController(Controller controller);
 }
